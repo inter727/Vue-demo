@@ -1,0 +1,32 @@
+{
+  "header": {
+    "default": [
+      {
+        "propertyName": "name",
+        "label": "名字",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "propertyName": "tourist",
+        "label": "必去景点",
+        "type": "multiSelect",
+        "options": ["东湖", "黄鹤楼", "长江大桥", "武汉大学", "汉口江滩", "江汉路步行街",
+          "省博物馆", "楚河汉街", "欢乐谷", "光谷风情街", "归元寺", "古琴台"]
+      },
+      {
+        "propertyName": "days",
+        "label": "天数",
+        "type": "select",
+        "options": [{"label": "一日游", "value": 1}, {"label": "两日游", "value": 2},
+          {"label": "三日游", "value": 3}],
+        "isFilter": true
+      },
+      {
+        "propertyName": "remark",
+        "label": "备注",
+        "type": "textarea"
+      }
+    ]
+  }
+}
