@@ -3,8 +3,9 @@
     "default": [
       {
         "propertyName": "name",
-        "label": "名字",
+        "label": "姓名",
         "type": "text",
+        "width": 100,
         "readOnly": true
       },
       {
@@ -18,6 +19,7 @@
         "propertyName": "days",
         "label": "天数",
         "type": "select",
+        "width": 120,
         "options": [{"label": "一日游", "value": 1}, {"label": "两日游", "value": 2},
           {"label": "三日游", "value": 3}],
         "isFilter": true
@@ -25,7 +27,8 @@
       {
         "propertyName": "remark",
         "label": "备注",
-        "type": "textarea"
+        "type": "textarea",
+        "width": 200
       }
     ]
   }

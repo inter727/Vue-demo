@@ -16,14 +16,10 @@ h1, h2 {
   font-weight: normal;
 }
 
-ul {
+ul, li {
   list-style-type: none;
   margin: 0;
   padding: 0;
-}
-
-li {
-  margin: 10px 0;
 }
 
 a {

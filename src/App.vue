@@ -37,10 +37,11 @@ export default {
 
   .list li {
     text-align: center;
+    margin: 10px 0;
   }
 
   .router {
     flex: auto;
-    padding: 0 15px;
+    padding: 15px;
   }
 </style>
