@@ -2,15 +2,16 @@
   <el-table class="tourist-table" :data="tableDatas">
     <el-table-column label="No." type="index" width="50" align="center"></el-table-column>
     <el-table-column label="operation" width="150" align="center"></el-table-column>
-    <el-table-column v-for="header in headers" :label="header.label" :prop="header.propertyName"
-                     :width="header.width || ''" align="center">
+    <el-table-column v-for="header in headers" :key="header.propertyName" :label="header.label"
+                     :prop="header.propertyName" :width="header.width || ''" align="center">
       <template slot-scope="scope">
         <div v-if="scope.row.editing">
           <el-select v-if="header.type === 'select'" v-model="scope.row[header.propertyName]">
             <el-option v-for="option in header.options" :key="option.value" :label="option.label"
-                       :value="option.value"></el-option>
+                       :value="option.label"></el-option>
           </el-select>
-          <el-select v-else-if="header.type === 'multiSelect'" v-model="scope.row[header.propertyName]" multiple>
+          <el-select v-else-if="header.type === 'multiSelect'" v-model="valueData[header.propertyName][scope.$index]"
+                     class="multiple-select" multiple>
             <el-option v-for="option in header.options" :key="option" :label="option" :value="option"></el-option>
           </el-select>
           <el-input v-else v-model="scope.row[header.propertyName]" :type="header.type"
@@ -28,13 +29,36 @@
     data() {
       return {
         headers: tableSetting['header']['default'],
-        tableDatas: tableData['default']
+        tableDatas: [],
+        valueData: {tourist: []}
       }
+    },
+    methods: {
+      initTableData() {
+        this.clearData()
+        let options = this.headers.find(({ propertyName }) => propertyName === 'days').options
+        let daysObj = options.reduce((prev, { label, value }) => Object.assign(prev, {[value]: label}), {})
+        this.tableDatas = tableData['default'].map(({ name, tourist, days, remark }) => {
+          this.valueData.tourist.push(tourist.split(';'))
+          return { name, tourist, days: daysObj[days], remark }
+        })
+      },
+      clearData() {
+        this.tableDatas = []
+        this.valueData = {tourist: []}
+      }
+    },
+    mounted() {
+      this.initTableData()
     }
   }
 </script>
 <style>
   .tourist-table th, .tourist-table td {
     padding: 4px 0;
+  }
+
+  .tourist-table .multiple-select {
+    width: 100%;
   }
 </style>
