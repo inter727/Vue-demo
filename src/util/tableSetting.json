@@ -9,11 +9,12 @@
         "readOnly": true
       },
       {
-        "propertyName": "tourist",
+        "propertyName": "tourists",
         "label": "必去景点",
         "type": "multiSelect",
         "options": ["东湖", "黄鹤楼", "长江大桥", "武汉大学", "汉口江滩", "江汉路步行街",
-          "省博物馆", "楚河汉街", "欢乐谷", "光谷风情街", "归元寺", "古琴台"]
+          "省博物馆", "楚河汉街", "欢乐谷", "光谷风情街", "归元寺", "古琴台"],
+        "tag": true
       },
       {
         "propertyName": "days",

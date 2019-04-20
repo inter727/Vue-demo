@@ -16,5 +16,5 @@ const routes = [
 
 export default new VueRouter({
   routes,
-  history: true
+  mode: 'history'
 })
