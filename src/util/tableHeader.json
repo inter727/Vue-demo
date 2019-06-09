@@ -9,8 +9,8 @@
         "type": "operation",
         "label": "操作",
         "operation": {
-          "default": {"type": "button", "handles": ["add", "delete"]},
-          "editing": "button"
+          "default": {"type": "icon", "handles": ["add", "delete"]},
+          "editing": "icon"
         },
         "width": 150
       },
@@ -42,7 +42,8 @@
         "width": 120,
         "options": [{"label": "一日游", "value": 1}, {"label": "两日游", "value": 2},
           {"label": "三日游", "value": 3}],
-        "isFilter": true
+        "filters": [{"text": "一日游", "value": "一日游"}, {"text": "两日游", "value": "两日游"},
+          {"text": "三日游", "value": "三日游"}]
       },
       {
         "prop": "remark",

@@ -2,15 +2,18 @@
   <div>
     <el-table class="normal-table" :data="data" v-bind="$attrs" v-on="$listeners">
       <el-table-column v-for="(item, index) in header" :key="index" :type="item.type" :prop="item.prop"
-                       :label="item.label" :width="item.width || ''" align="center">
+                       :label="item.label" :width="item.width || ''" align="center" :filters="item.filters"
+                       :filter-method="filterHandle[item.prop]">
         <template v-if="item.prop || item.type === 'operation'" v-slot="scope">
           <template v-if="scope.row.editing">
             <template v-if="item.type === 'operation'">
-              <i v-if="operation.editing.type === 'icon'" v-for="handle in operation.editing.handles"
-                 :class="operConfig.icon[handle].class" :style="operConfig.icon[handle].style"
-                 @click="handleFunc(handle, scope.row, scope.$index)"></i>
-              <el-button v-else :type="operConfig.button[handle].type" :key="handle" size="mini"
-                         @click="handleFunc(handle, scope.row, scope.$index)">{{operConfig.button[handle].label}}</el-button>
+              <template v-for="handle in operation.editing.handles">
+                <i v-if="operation.editing.type === 'icon'" :class="operaConfig.icon[handle].class"
+                   :style="operaConfig.icon[handle].style" @click="handleFunc(handle, scope.row, scope.$index)"></i>
+                <el-button v-else :type="operaConfig.button[handle].type" :key="handle" size="mini"
+                           @click="handleFunc(handle, scope.row, scope.$index)">
+                  {{operaConfig.button[handle].label}}</el-button>
+              </template>
             </template>
             <el-select v-else-if="item.type === 'select'" v-model="scope.row[item.prop]" :multiple="item.multiple">
               <el-option v-for="option in item.options" :key="option.value || option" :label="option.label || option"
@@ -20,11 +23,12 @@
                       :disabled="item.readOnly && !isAdding"></el-input>
           </template>
           <template v-else-if="item.type === 'operation'">
-            <i v-if="operation.default.type === 'icon'" v-for="handle in operation.default.handles"
-               :class="operConfig.icon[handle].class" :style="operConfig.icon[handle].style"
-               @click="handleFunc(handle, scope.row, scope.$index)"></i>
-            <el-button v-else :type="operConfig.button[handle].type" :key="handle" size="mini"
-                       @click="handleFunc(handle, scope.row, scope.$index)">{{operConfig.button[handle].label}}</el-button>
+            <template v-for="handle in operation.default.handles">
+              <i v-if="operation.default.type === 'icon'" :class="operaConfig.icon[handle].class"
+                 :style="operaConfig.icon[handle].style" @click="handleFunc(handle, scope.row, scope.$index)"></i>
+              <el-button v-else :type="operaConfig.button[handle].type" :key="handle" size="mini"
+                         @click="handleFunc(handle, scope.row, scope.$index)">{{operaConfig.button[handle].label}}</el-button>
+            </template>
           </template>
           <el-tag v-else-if="item.tag" v-for="tag in scope.row[item.prop]" :key="tag">{{tag}}</el-tag>
           <span v-else>{{scope.row[item.prop]}}</span>
@@ -38,18 +42,18 @@
     data() {
       return {
         handle: {
-          default: ['add', 'delete', 'down', 'edit', 'up'],
+          default: ['up', 'down', 'add', 'delete', 'edit'],
           editing: ['cancel', 'save']
         },
-        operConfig: {
+        operaConfig: {
           icon: {
             add: {class: {'el-icon-plus': true}},
             cancel: {class: {'el-icon-close': true}, style: {color: '#f56c6c'}},
             delete: {class: {'el-icon-delete': true}},
-            down: {class: {'el-icon-bottom': true}},
+            down: {class: {'el-icon-sort-down': true}},
             edit: {class: {'el-icon-edit': true}},
             save: {class: {'el-icon-check': true}, style: {color: '#5daf34'}},
-            up: {class: {'el-icon-top': true}}
+            up: {class: {'el-icon-sort-up': true}}
           },
           button: {
             add: {type: 'primary', label: '新增'},
@@ -66,7 +70,8 @@
     props: {
       data: {type: Array, required: true},
       header: {type: Array, default: () => []},
-      isAdding: {type: Boolean, default: false}
+      isAdding: {type: Boolean, default: false},
+      filterHandle: {type: Object, default: () => {}}
     },
     computed: {
       operation() {
@@ -95,6 +100,7 @@
   .normal-table [class ^='el-icon'] {
     font-size: 18px;
     cursor: pointer;
+    margin-right: 4px;
   }
 
   .normal-table .multiple-select {

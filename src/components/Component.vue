@@ -1,10 +1,11 @@
 <template>
-  <normal-table :data="tableDatas" :header="headers" :stripe="true" :isAdding="isAdding" @row-dblclick="handleEdit"
-                @save="handleSave" @cancel="handleCancel" @add="handleAdd" @delete="handleDelete"></normal-table>
+  <normal-table :data="tableDatas" :header="headers" :stripe="true" :isAdding="isAdding" :filterHandle="filterHandle"
+                @row-dblclick="handleEdit" @save="handleSave" @cancel="handleCancel" @add="handleAdd" @delete="handleDelete">
+  </normal-table>
 </template>
 <script>
   import normalTable from './common/NormalTable.vue'
-  import tableSetting from '../util/tableSetting1.json'
+  import tableSetting from '../util/tableHeader.json'
   import tableData from '../data/tableData.json'
   export default {
     data() {
@@ -13,6 +14,9 @@
         tableDatas: [],
         beforeEditDatas: [],
         isAdding: false,
+        filterHandle: {
+          days: this.filterDay
+        },
         message: {
           edit: {type: 'info', message: '请先保存新增的数据'},
           add: {type: 'info', message: '编辑状态不能新增数据'},
@@ -88,6 +92,9 @@
         }).then(() => {
           this.tableDatas.splice(index, 1)
         }).catch(() => {})
+      },
+      filterDay(value, row, column) {
+        return row[column.property] === value
       }
     },
     mounted() {
