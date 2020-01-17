@@ -4,15 +4,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from './components/Home.vue'
-import Table from './components/Table.vue'
-import Component from './components/Component.vue'
+import TableComponent from './components/TableComponent'
+import DialogComponent from './components/DialogComponent'
 
 Vue.use(VueRouter)
 
 const routes = [
   {path: '/home', component: Home},
-  {path: '/table', component: Table},
-  {path: '/component', component: Component},
+  {path: '/tableComponent', component: TableComponent},
+  {path: '/dialogComponent', component: DialogComponent},
   {path: '*', redirect: '/home'}
 ]
 

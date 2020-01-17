@@ -2,8 +2,8 @@
   <div id="app">
     <ul class="list">
       <li><router-link to="/home">首页</router-link></li>
-      <li><router-link to="/table">表格</router-link></li>
-      <li><router-link to="/component">组件</router-link></li>
+      <li><router-link to="/tableComponent">表格</router-link></li>
+      <li><router-link to="/dialogComponent">弹框</router-link></li>
     </ul>
     <div class="router">
       <router-view></router-view>
