@@ -22,7 +22,6 @@
       {
         "prop": "name",
         "label": "姓名",
-        "type": "text",
         "width": 100,
         "readOnly": true
       },

@@ -2,8 +2,13 @@
   <div>
     <el-table class="normal-table" :data="data" v-bind="$attrs" v-on="$listeners">
       <el-table-column v-for="(item, index) in header" :key="index" :type="item.type" :prop="item.prop"
-                       :label="item.label" :width="item.width || ''" align="center" :filters="item.filters"
-                       :filter-method="filterHandle[item.prop]">
+                       :label="item.label" :width="item.width" align="center" :fixed="item.fixed"
+                       :filters="item.filters" :filter-method="filterHandle[item.prop]">
+        <template v-if="item.children">
+          <el-table-column v-for="(c, i) in item.children" :key="i" :prop="c.prop" :label="c.label"
+                           :min-width="c.width" align="center">
+          </el-table-column>
+        </template>
         <template v-if="item.prop || item.type === 'operation'" v-slot="scope">
           <template v-if="scope.row.editing">
             <template v-if="item.type === 'operation'">
@@ -31,7 +36,7 @@
             </template>
           </template>
           <el-tag v-else-if="item.tag" v-for="tag in scope.row[item.prop]" :key="tag">{{tag}}</el-tag>
-          <span v-else>{{scope.row[item.prop]}}</span>
+          <template v-else>{{scope.row[item.prop]}}</template>
         </template>
       </el-table-column>
     </el-table>
@@ -71,7 +76,7 @@
       data: {type: Array, required: true},
       header: {type: Array, default: () => []},
       isAdding: {type: Boolean, default: false},
-      filterHandle: {type: Object, default: () => {}}
+      filterHandle: {type: Object, default: () => ({})}
     },
     computed: {
       operation() {
