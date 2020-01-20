@@ -6,8 +6,7 @@
                        :filters="item.filters" :filter-method="filterHandle[item.prop]">
         <template v-if="item.children">
           <el-table-column v-for="(c, i) in item.children" :key="i" :prop="c.prop" :label="c.label"
-                           :min-width="c.width" align="center">
-          </el-table-column>
+                           :min-width="c.width" align="center"></el-table-column>
         </template>
         <template v-if="item.prop || item.type === 'operation'" v-slot="scope">
           <template v-if="scope.row.editing">
@@ -15,9 +14,8 @@
               <template v-for="handle in operation.editing.handles">
                 <i v-if="operation.editing.type === 'icon'" :class="operaConfig.icon[handle].class"
                    :style="operaConfig.icon[handle].style" @click="handleFunc(handle, scope.row, scope.$index)"></i>
-                <el-button v-else :type="operaConfig.button[handle].type" :key="handle" size="mini"
-                           @click="handleFunc(handle, scope.row, scope.$index)">
-                  {{operaConfig.button[handle].label}}</el-button>
+                <el-button v-else :type="operaConfig[operation.editing.type][handle].type" :key="handle" size="mini"
+                           @click="handleFunc(handle, scope.row, scope.$index)">{{operaConfig.button[handle].label}}</el-button>
               </template>
             </template>
             <el-select v-else-if="item.type === 'select'" v-model="scope.row[item.prop]" :multiple="item.multiple">
@@ -31,7 +29,7 @@
             <template v-for="handle in operation.default.handles">
               <i v-if="operation.default.type === 'icon'" :class="operaConfig.icon[handle].class"
                  :style="operaConfig.icon[handle].style" @click="handleFunc(handle, scope.row, scope.$index)"></i>
-              <el-button v-else :type="operaConfig.button[handle].type" :key="handle" size="mini"
+              <el-button v-else :type="operaConfig[operation.default.type][handle].type" :key="handle" size="mini"
                          @click="handleFunc(handle, scope.row, scope.$index)">{{operaConfig.button[handle].label}}</el-button>
             </template>
           </template>
@@ -59,6 +57,15 @@
             edit: {class: {'el-icon-edit': true}},
             save: {class: {'el-icon-check': true}, style: {color: '#5daf34'}},
             up: {class: {'el-icon-sort-up': true}}
+          },
+          text: {
+            add: {type: 'text', label: '新增'},
+            cancel: {type: 'text', label: '取消'},
+            delete: {type: 'text', label: '删除'},
+            down: {type: 'text', label: '下移'},
+            edit: {type: 'text', label: '编辑'},
+            save: {type: 'text', label: '保存'},
+            up: {type: 'text', label: '上移'}
           },
           button: {
             add: {type: 'primary', label: '新增'},

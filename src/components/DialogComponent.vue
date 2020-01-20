@@ -49,6 +49,11 @@
               {prop: 'isCloseR', label: '是否关闭信号源', width: 100, type: 'select', labelWidth: 120, options: []}
             ]
           },
+          {
+            type: 'operation',
+            label: '操作',
+            operation: {default: {type: 'text', handles: ['edit', 'delete']}}
+          }
         ],
         sourceOptions: [
           {value: '1', label: '1号显示器'},
