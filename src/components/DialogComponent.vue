@@ -1,11 +1,14 @@
 <template>
   <div>
-    <normal-table :data="data" :header="header" :stripe="true"></normal-table>
+    <normal-table :data="data" :header="header" :stripe="true" @edit="handleEdit"></normal-table>
+    <form-dialog :form-data="formData" :dialog-visible.sync="visible" :dialog-type="dialogType"
+                 top="50px" width="800px"></form-dialog>
   </div>
 </template>
 
 <script>
-  import normalTable from './common/NormalTable.vue'
+  import normalTable from './common/NormalTable'
+  import formDialog from './common/FormDialog'
   import projectData from '../data/tableData.json'
   import { arrayToObject } from "../util/util";
 
@@ -22,9 +25,10 @@
             type: 'group',
             span: 24,
             children: [
-              {prop: 'sourceL', label: '信号源', type: 'select', options: []},
-              {prop: 'urlL', label: '页面', type: 'select', options: []},
-              {prop: 'isCloseL', label: '是否关闭信号源', width: 100, type: 'select', labelWidth: 120, options: []}
+              {prop: 'sourceL', label: '信号源', type: 'select', span: 8, options: []},
+              {prop: 'urlL', label: '页面', type: 'select', span: 8, options: []},
+              {prop: 'isCloseL', label: '是否关闭信号源', width: 100, type: 'select', span: 8,
+                labelWidth: '120px', options: []}
             ]
           },
           {
@@ -33,9 +37,10 @@
             type: 'group',
             span: 24,
             children: [
-              {prop: 'sourceM', label: '信号源', type: 'select', options: []},
-              {prop: 'urlM', label: '页面', type: 'select', options: []},
-              {prop: 'isCloseM', label: '是否关闭信号源', width: 100, type: 'select', labelWidth: 120, options: []}
+              {prop: 'sourceM', label: '信号源', type: 'select', span: 8, options: []},
+              {prop: 'urlM', label: '页面', type: 'select', span: 8, options: []},
+              {prop: 'isCloseM', label: '是否关闭信号源', width: 100, type: 'select', span: 8,
+                labelWidth: '120px', options: []}
             ]
           },
           {
@@ -44,9 +49,10 @@
             type: 'group',
             span: 24,
             children: [
-              {prop: 'sourceR', label: '信号源', type: 'select', options: []},
-              {prop: 'urlR', label: '页面', type: 'select', options: []},
-              {prop: 'isCloseR', label: '是否关闭信号源', width: 100, type: 'select', labelWidth: 120, options: []}
+              {prop: 'sourceR', label: '信号源', type: 'select', span: 8, options: []},
+              {prop: 'urlR', label: '页面', type: 'select', span: 8, options: []},
+              {prop: 'isCloseR', label: '是否关闭信号源', width: 100, type: 'select', span: 8,
+                labelWidth: '120px', options: []}
             ]
           },
           {
@@ -69,6 +75,9 @@
           {value: 'false', label: '否'},
         ],
         types: ['source', 'url', 'isClose'],
+        visible: false,
+        dialogType: '',
+        formData: []
       }
     },
     computed: {
@@ -93,7 +102,7 @@
         return arrayToObject(this.isCloseOptions, 'value', 'label')
       }
     },
-    components: { normalTable },
+    components: { normalTable, formDialog },
     methods: {
       initTableData() {
         this.clearData()
@@ -109,6 +118,25 @@
       clearData() {
         this.data = []
       },
+      handleEdit({ row, index }) {
+        console.log(row);
+        this.visible = true
+        this.formData = this.projectHeader.reduce((arr, item) => {
+          if (!(item.prop in row) && item.type !== 'group') { return arr }
+          if (item.type === 'group') {
+            let children = item.children.map(c => {
+              let type = c.prop.substring(0, c.prop.length - 1)
+              return Object.assign({}, c, {
+                'value': this[`${type}Options`].find(({ label }) => label === row[c.prop]).value
+              })
+            })
+            arr.push(Object.assign({}, item, { children }))
+          } else {
+            arr.push(Object.assign({}, item, {'value': row[item.prop]}))
+          }
+          return arr
+        }, [])
+      }
     },
     mounted() {
       this.initTableData()

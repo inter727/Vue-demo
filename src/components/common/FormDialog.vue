@@ -1,6 +1,6 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" class="form-dialog" :top="top" :width="width" :title="handle[dialogType] || ''"
-             :before-close="closeDialog">
+  <el-dialog :visible.sync="dialogVisible" class="form-dialog" :title="handle[dialogType] || ''"
+             :before-close="closeDialog" v-bind="$attrs" v-on="$listeners">
     <el-form :model="form" :rules="rule" ref="dialogForm" label-width="80px">
       <el-row>
         <el-col v-for="item in formData" :key="item.prop" :span="item.span || 12">
@@ -28,9 +28,9 @@
       </el-row>
     </el-form>
     <span slot="footer">
-            <el-button @click="closeDialog">取 消</el-button>
-            <el-button type="primary" @click="save('dialogForm')">确 定</el-button>
-        </span>
+      <el-button @click="closeDialog">取 消</el-button>
+      <el-button type="primary" @click="save('dialogForm')">确 定</el-button>
+    </span>
   </el-dialog>
 </template>
 
@@ -46,9 +46,7 @@
     props: {
       dialogVisible: {type: Boolean, required: true},
       dialogType: {type: String, required: true},
-      formData: {type: Array, required: true},
-      top: {type: String, default: '15vh'},
-      width: {type: String, default: '600px'}
+      formData: {type: Array, required: true}
     },
     computed: {
       rule() {
