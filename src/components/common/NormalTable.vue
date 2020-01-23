@@ -114,6 +114,14 @@
     cursor: pointer;
     margin-right: 4px;
   }
+  
+  .normal-table .el-input .el-input__inner {
+    height: 30px;
+  }
+
+  .normal-table .el-input__suffix .el-select__caret {
+    height: 30px;
+  }
 
   .normal-table .multiple-select {
     width: 100%;

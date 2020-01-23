@@ -114,6 +114,9 @@
   .form-dialog .el-dialog__footer {
     text-align: center;
   }
+  .form-dialog .el-input .el-input__inner {
+    height: 30px;
+  }
   .form-dialog .el-date-editor.el-input,
   .form-dialog .el-date-editor.el-input__inner {
     width: 200px;

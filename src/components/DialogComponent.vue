@@ -2,7 +2,7 @@
   <div>
     <normal-table :data="data" :header="header" :stripe="true" @edit="handleEdit"></normal-table>
     <form-dialog :form-data="formData" :dialog-visible.sync="visible" :dialog-type="dialogType"
-                 top="50px" width="800px"></form-dialog>
+                 top="50px" width="800px" @saveData="handleSave"></form-dialog>
   </div>
 </template>
 
@@ -77,7 +77,8 @@
         types: ['source', 'url', 'isClose'],
         visible: false,
         dialogType: '',
-        formData: []
+        formData: [],
+        currentIndex: 0
       }
     },
     computed: {
@@ -119,16 +120,16 @@
         this.data = []
       },
       handleEdit({ row, index }) {
-        console.log(row);
         this.visible = true
+        this.dialogType = 'edit'
+        this.currentIndex = index
         this.formData = this.projectHeader.reduce((arr, item) => {
           if (!(item.prop in row) && item.type !== 'group') { return arr }
           if (item.type === 'group') {
             let children = item.children.map(c => {
               let type = c.prop.substring(0, c.prop.length - 1)
-              return Object.assign({}, c, {
-                'value': this[`${type}Options`].find(({ label }) => label === row[c.prop]).value
-              })
+              let target = this[`${type}Options`].find(({ label }) => label === row[c.prop])
+              return Object.assign({}, c, {'value': target ? target.value : ''})
             })
             arr.push(Object.assign({}, item, { children }))
           } else {
@@ -136,6 +137,18 @@
           }
           return arr
         }, [])
+      },
+      handleSave(formData) {
+        let data = formData.reduce((obj, item) => {
+          if (item.type !== 'group') {
+            return Object.assign(obj, {[item.prop]: item.value})
+          }
+          return item.children.reduce((prev, { prop, value }) => {
+            let type = prop.substring(0, prop.length - 1)
+            return Object.assign(prev, {[prop]: this[`${type}Map`][value]})
+          }, obj)
+        }, {})
+        this.$set(this.data, this.currentIndex, data)
       }
     },
     mounted() {
