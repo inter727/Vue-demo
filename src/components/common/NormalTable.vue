@@ -5,7 +5,7 @@
         <i :class="tool.class"></i>{{tool.label}}
       </span>
     </div>
-    <el-table class="normal-table" :data="data" v-bind="$attrs" v-on="$listeners">
+    <el-table class="normal-table" :data="data" v-bind="$attrs" v-on="$listeners" @selection-change="handleSelectionChange">
       <el-table-column v-for="(item, index) in header" :key="index" :type="item.type" :prop="item.prop"
                        :label="item.label" :width="item.width" align="center" :fixed="item.fixed"
                        :filters="item.filters" :filter-method="filterHandle[item.prop]">
@@ -83,11 +83,12 @@
           }
         },
         tool: {
-          add: {class: {'el-icon-plus': true}, label: '新增', handle: 'handleAdd'},
-          delete: {class: {'el-icon-delete': true}, label: '删除', handle: 'handleDelete'},
+          add: {class: {'el-icon-circle-plus': true}, label: '新增', handle: 'handleAdd'},
+          delete: {class: {'el-icon-delete-solid': true}, label: '删除', handle: 'handleDelete'},
           export: {class: {'el-icon-download': true}, label: '导出', handle: 'handleExport'},
-          save: {class: {'el-icon-circle-check': true}, label: '保存', handle: 'handleSave'}
-        }
+          save: {class: {'el-icon-success': true}, label: '保存', handle: 'handleSave'}
+        },
+        multipleSelection: []
       }
     },
     props: {
@@ -117,7 +118,14 @@
         this.$emit(handle, { row, index })
       },
       handleToolFunc(handle) {
+        if (handle === 'handleSave' || handle === 'handleDelete') {
+          this.$emit(handle, this.multipleSelection)
+          return
+        }
         this.$emit(handle)
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val
       }
     }
   }
