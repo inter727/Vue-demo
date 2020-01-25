@@ -1,7 +1,7 @@
 <template>
   <div>
     <normal-table :data="data" :header="header" :stripe="true" :toolbars="toolbars"
-                  @handleAdd="handleAdd" @edit="handleEdit"></normal-table>
+                  @handleAdd="handleAdd" @edit="handleEdit" @delete="handleDelete"></normal-table>
     <form-dialog :form-data="formData" :dialog-visible.sync="visible" :dialog-type="dialogType"
                  top="50px" width="800px" @saveData="handleSave"></form-dialog>
   </div>
@@ -122,7 +122,9 @@
         this.data = []
       },
       handleAdd() {
-        console.log(1);
+        this.visible = true
+        this.dialogType = 'add'
+        this.formData = this.projectHeader.filter(({ type }) => type !== 'operation')
       },
       handleEdit({ row, index }) {
         this.visible = true
@@ -143,7 +145,16 @@
           return arr
         }, [])
       },
-      handleSave(formData) {
+      handleDelete({ row, index }) {
+        this.$confirm('是否删除该行数据', '提醒', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.data.splice(index, 1)
+        }).catch(() => {})
+      },
+      handleSave(formData, type) {
         let data = formData.reduce((obj, item) => {
           if (item.type !== 'group') {
             return Object.assign(obj, {[item.prop]: item.value})
@@ -153,7 +164,9 @@
             return Object.assign(prev, {[prop]: this[`${type}Map`][value]})
           }, obj)
         }, {})
-        this.$set(this.data, this.currentIndex, data)
+        type === 'add'
+          ? this.data.push(data)
+          : this.$set(this.data, this.currentIndex, data)
       }
     },
     mounted() {
