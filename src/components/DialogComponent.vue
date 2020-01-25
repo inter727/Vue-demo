@@ -1,6 +1,7 @@
 <template>
   <div>
-    <normal-table :data="data" :header="header" :stripe="true" @edit="handleEdit"></normal-table>
+    <normal-table :data="data" :header="header" :stripe="true" :toolbars="toolbars"
+                  @handleAdd="handleAdd" @edit="handleEdit"></normal-table>
     <form-dialog :form-data="formData" :dialog-visible.sync="visible" :dialog-type="dialogType"
                  top="50px" width="800px" @saveData="handleSave"></form-dialog>
   </div>
@@ -78,7 +79,8 @@
         visible: false,
         dialogType: '',
         formData: [],
-        currentIndex: 0
+        currentIndex: 0,
+        toolbars: ['add']
       }
     },
     computed: {
@@ -118,6 +120,9 @@
       },
       clearData() {
         this.data = []
+      },
+      handleAdd() {
+        console.log(1);
       },
       handleEdit({ row, index }) {
         this.visible = true

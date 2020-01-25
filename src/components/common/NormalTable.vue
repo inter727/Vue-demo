@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div v-if="tools.length" class="table-toolbar">
+      <span v-for="tool in tools" :key="tool.label" @click="handleToolFunc(tool.handle)">
+        <i :class="tool.class"></i>{{tool.label}}
+      </span>
+    </div>
     <el-table class="normal-table" :data="data" v-bind="$attrs" v-on="$listeners">
       <el-table-column v-for="(item, index) in header" :key="index" :type="item.type" :prop="item.prop"
                        :label="item.label" :width="item.width" align="center" :fixed="item.fixed"
@@ -76,6 +81,12 @@
             save: {type: 'success', label: '保存'},
             up: {type: 'default', label: '上移'}
           }
+        },
+        tool: {
+          add: {class: {'el-icon-plus': true}, label: '新增', handle: 'handleAdd'},
+          delete: {class: {'el-icon-delete': true}, label: '删除', handle: 'handleDelete'},
+          export: {class: {'el-icon-download': true}, label: '导出', handle: 'handleExport'},
+          save: {class: {'el-icon-circle-check': true}, label: '保存', handle: 'handleSave'}
         }
       }
     },
@@ -83,7 +94,8 @@
       data: {type: Array, required: true},
       header: {type: Array, default: () => []},
       isAdding: {type: Boolean, default: false},
-      filterHandle: {type: Object, default: () => ({})}
+      filterHandle: {type: Object, default: () => ({})},
+      toolbars: {type: Array, default: () => []}
     },
     computed: {
       operation() {
@@ -94,17 +106,42 @@
             : {type: operation[key], handles: this.handle[key]}
           return Object.assign(obj, {[key]: tmObj})
         }, {})
+      },
+      tools() {
+        if (!this.toolbars.length) { return [] }
+        return this.toolbars.map(tool => this.tool[tool])
       }
     },
     methods: {
       handleFunc(handle, row, index) {
         this.$emit(handle, { row, index })
+      },
+      handleToolFunc(handle) {
+        this.$emit(handle)
       }
     }
   }
 
 </script>
 <style>
+  .table-toolbar {
+    padding: 0 0 2px 10px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #EBEEF5;
+  }
+
+  .table-toolbar span {
+    cursor: pointer;
+    margin-right: 4px;
+    color: #909399;
+    font-weight: 600;
+  }
+
+  .table-toolbar span [class ^='el-icon'] {
+    font-size: 18px;
+    margin-right: 4px;
+  }
+  
   .normal-table th, .normal-table td {
     padding: 4px 0;
   }
