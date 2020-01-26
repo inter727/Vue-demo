@@ -13,16 +13,21 @@
                     <el-option v-for="{value, label} in child.options" :key="value" :value="value"
                                :label="label"></el-option>
                   </el-select>
-                  <el-input v-else v-model="form[child.prop]" type="text"></el-input>
+                  <el-input v-else v-model="form[child.prop]" type="text"
+                            :disabled="dialogType === 'edit' && child.disabled"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
           </template>
           <el-form-item v-else :prop="item.prop" :label="item.label" :label-width="item.labelWidth">
             <el-date-picker v-if="item.type === 'date'" v-model="form[item.prop]" :type="item.dateType || 'date'"
+                            :format="getFormat(item.dateType)" :value-format="getFormat(item.dateType)"
                             :placeholder="item.placeholder || '请选择'"></el-date-picker>
+            <el-select v-else-if="item.type === 'select'" v-model="form[item.prop]">
+              <el-option v-for="{value, label} in item.options" :key="value" :value="value" :label="label"></el-option>
+            </el-select>
             <el-input v-else v-model="form[item.prop]" type="text"
-                      :disabled="dialogType === 2 && item.disabled"></el-input>
+                      :disabled="dialogType === 'edit' && item.disabled"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -79,13 +84,7 @@
               item.children = item.children.map(child => Object.assign(child, {value: this.form[child.prop]}))
               return item
             }
-            return {
-              prop: item.prop,
-              label: item.label,
-              value: item.type === 'date'
-                ? this.$moment(this.form[item.prop]).format(this.getFormat(item.dateType))
-                : this.form[item.prop]
-            }
+            return {prop: item.prop, label: item.label, value: this.form[item.prop]}
           })
           this.$emit('saveData', formData, this.dialogType)
           this.closeDialog()
@@ -94,13 +93,13 @@
       getFormat(type) {
         switch (type) {
           case 'year':
-            return 'YYYY'
+            return 'yyyy'
           case 'month':
-            return 'YYYY-MM'
+            return 'yyyy-MM'
           case 'datetime':
-            return 'YYYY-MM-DD HH:mm'
+            return 'yyyy-MM-dd HH'
           default:
-            return 'YYYY-MM-DD'
+            return 'yyyy-MM-dd'
         }
       },
       closeDialog() {
@@ -114,11 +113,13 @@
   .form-dialog .el-dialog__footer {
     text-align: center;
   }
+
   .form-dialog .el-input .el-input__inner {
     height: 30px;
   }
+
   .form-dialog .el-date-editor.el-input,
   .form-dialog .el-date-editor.el-input__inner {
-    width: 200px;
+    width: 100%;
   }
 </style>

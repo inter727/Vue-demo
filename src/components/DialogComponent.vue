@@ -1,6 +1,6 @@
 <template>
   <div>
-    <normal-table :data="data" :header="header" :stripe="true" :toolbars="toolbars"
+    <normal-table :data="data" :header="header" :border="true" :stripe="true" :toolbars="toolbars"
                   @handleAdd="handleAdd" @edit="handleEdit" @delete="handleDelete"></normal-table>
     <form-dialog :form-data="formData" :dialog-visible.sync="visible" :dialog-type="dialogType"
                  top="50px" width="800px" @saveData="handleSave"></form-dialog>
@@ -19,7 +19,8 @@
       return {
         data: [],
         projectHeader: [
-          {prop: 'name', label: '方案名', rules: [{required: true, message: '不能为空'}]},
+          {prop: 'name', label: '方案名', disabled: true, rules: [{required: true, message: '不能为空'}]},
+          {prop: 'date', label: '日期', type: 'date', width: 100, dateType: 'datetime'},
           {
             prop: 'left',
             label: '左屏',
@@ -59,6 +60,7 @@
           {
             type: 'operation',
             label: '操作',
+            width: 100,
             operation: {default: {type: 'text', handles: ['edit', 'delete']}}
           }
         ],
