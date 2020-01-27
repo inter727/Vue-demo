@@ -44,5 +44,6 @@ export default {
   .router {
     flex: auto;
     padding: 15px;
+    overflow: auto;
   }
 </style>

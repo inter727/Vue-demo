@@ -9,12 +9,12 @@
             <el-row>
               <el-col v-for="child in item.children" :key="child.prop" :span="child.span || 12">
                 <el-form-item :prop="child.prop" :label="child.label" :label-width="child.labelWidth">
-                  <el-select v-if="child.type === 'select'" v-model="form[child.prop]">
-                    <el-option v-for="{value, label} in child.options" :key="value" :value="value"
-                               :label="label"></el-option>
+                  <el-select v-if="child.type === 'select'" v-model="form[child.prop]" :multiple="child.multiple">
+                    <el-option v-for="option in child.options" :key="option.value || option" :value="option.value || option"
+                               :label="option.label || option"></el-option>
                   </el-select>
-                  <el-input v-else v-model="form[child.prop]" type="text"
-                            :disabled="dialogType === 'edit' && child.disabled"></el-input>
+                  <el-input v-else v-model="form[child.prop]" :type="child.type"
+                            :disabled="dialogType === 'edit' && child.readOnly"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -23,11 +23,12 @@
             <el-date-picker v-if="item.type === 'date'" v-model="form[item.prop]" :type="item.dateType || 'date'"
                             :format="getFormat(item.dateType)" :value-format="getFormat(item.dateType)"
                             :placeholder="item.placeholder || '请选择'"></el-date-picker>
-            <el-select v-else-if="item.type === 'select'" v-model="form[item.prop]">
-              <el-option v-for="{value, label} in item.options" :key="value" :value="value" :label="label"></el-option>
+            <el-select v-else-if="item.type === 'select'" v-model="form[item.prop]" :multiple="item.multiple">
+              <el-option v-for="option in item.options" :key="option.value || option" :value="option.value || option"
+                         :label="option.label || option"></el-option>
             </el-select>
-            <el-input v-else v-model="form[item.prop]" type="text"
-                      :disabled="dialogType === 'edit' && item.disabled"></el-input>
+            <el-input v-else v-model="form[item.prop]" :type="item.type"
+                      :disabled="dialogType === 'edit' && item.readOnly"></el-input>
           </el-form-item>
         </el-col>
       </el-row>

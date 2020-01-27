@@ -23,6 +23,9 @@
                            @click="handleFunc(handle, scope.row, scope.$index)">{{operaConfig.button[handle].label}}</el-button>
               </template>
             </template>
+            <el-date-picker v-else-if="item.type === 'date'" v-model="scope.row[item.prop]" :type="item.dateType || 'date'"
+                            :format="getFormat(item.dateType)" :value-format="getFormat(item.dateType)"
+                            :placeholder="item.placeholder || '请选择'"></el-date-picker>
             <el-select v-else-if="item.type === 'select'" v-model="scope.row[item.prop]" :multiple="item.multiple">
               <el-option v-for="option in item.options" :key="option.value || option" :label="option.label || option"
                          :value="option.label || option"></el-option>
@@ -126,7 +129,19 @@
       },
       handleSelectionChange(val) {
         this.multipleSelection = val
-      }
+      },
+      getFormat(type) {
+        switch (type) {
+          case 'year':
+            return 'yyyy'
+          case 'month':
+            return 'yyyy-MM'
+          case 'datetime':
+            return 'yyyy-MM-dd HH'
+          default:
+            return 'yyyy-MM-dd'
+        }
+      },
     }
   }
 
@@ -164,8 +179,16 @@
     height: 30px;
   }
 
+  .normal-table .el-date-editor.el-input {
+    width: 160px !important;
+  }
+
+  .normal-table .el-date-editor .el-input__icon {
+    line-height: 32px;
+  }
+
   .normal-table .el-input__suffix .el-select__caret {
-    height: 30px;
+    height: 34px;
   }
 
   .normal-table .multiple-select {

@@ -19,7 +19,7 @@
       return {
         data: [],
         projectHeader: [
-          {prop: 'name', label: '方案名', disabled: true, rules: [{required: true, message: '不能为空'}]},
+          {prop: 'name', label: '方案名', readOnly: true, fixed: true, rules: [{required: true, message: '不能为空'}]},
           {prop: 'date', label: '日期', type: 'date', width: 100, dateType: 'datetime'},
           {
             prop: 'left',
