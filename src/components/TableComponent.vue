@@ -1,5 +1,5 @@
 <template>
-  <normal-table :data="tableDatas" :header="headers" :stripe="true" :isAdding="isAdding" :filterHandle="filterHandle"
+  <normal-table :data="tableData" :header="headers" :stripe="true" :isAdding="isAdding" :filterHandle="filterHandle"
                 @row-dblclick="handleEdit" @save="handleSave" @cancel="handleCancel" @add="handleAdd" @delete="handleDelete">
   </normal-table>
 </template>
@@ -11,8 +11,8 @@
     data() {
       return {
         headers: tableSetting['header']['default'],
-        tableDatas: [],
-        beforeEditDatas: [],
+        tableData: [],
+        beforeEditData: [],
         isAdding: false,
         filterHandle: {
           days: this.filterDay
@@ -26,14 +26,14 @@
     },
     computed: {
       hasEditing() {
-        return this.tableDatas.some(({ editing }) => editing)
+        return this.tableData.some(({ editing }) => editing)
       }
     },
     watch: {
-      tableDatas: {
+      tableData: {
         handler(val) {
           if (this.hasEditing) { return }
-          this.beforeEditDatas = $.extend(true, [], val)
+          this.beforeEditData = $.extend(true, [], val)
         },
         deep: true
       }
@@ -44,12 +44,12 @@
         this.clearData()
         let options = this.headers.find(({ prop }) => prop === 'days').options
         let daysObj = options.reduce((prev, { label, value }) => Object.assign(prev, {[value]: label}), {})
-        this.tableDatas = tableData['default'].map(({ name, tourists, days, remark }) => {
+        this.tableData = tableData['default'].map(({ name, tourists, days, remark }) => {
           return {name, tourists: tourists.split(';'), days: daysObj[days], remark, editing: false}
         })
       },
       clearData() {
-        this.tableDatas = []
+        this.tableData = []
       },
       handleEdit(row) {
         if (this.isAdding) {
@@ -60,11 +60,11 @@
       },
       handleCancel({ row, index }) {
         if (this.isAdding) {
-          this.tableDatas.splice(index, 1)
+          this.tableData.splice(index, 1)
           this.isAdding = false
           return
         }
-        this.$set(this.tableDatas, index, this.beforeEditDatas[index])
+        this.$set(this.tableData, index, this.beforeEditData[index])
       },
       handleSave({ row, index }) {
         if (this.isAdding && !row.name) {
@@ -73,7 +73,7 @@
         }
         this.isAdding = false
         row.editing = false
-        this.$set(this.tableDatas, index, row)
+        this.$set(this.tableData, index, row)
       },
       handleAdd({ row, index }) {
         if (this.hasEditing) {
@@ -81,7 +81,7 @@
           return
         }
         this.isAdding = true
-        this.tableDatas.splice(index + 1, 0,
+        this.tableData.splice(index + 1, 0,
           {name: '', tourist: [], days: '一日游', remark: '', editing: true})
       },
       handleDelete({ row, index }) {
@@ -90,7 +90,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.tableDatas.splice(index, 1)
+          this.tableData.splice(index, 1)
         }).catch(() => {})
       },
       filterDay(value, row, column) {

@@ -51,7 +51,7 @@
     },
     props: {
       dialogVisible: {type: Boolean, required: true},
-      dialogType: {type: String, required: true},
+      dialogType: {type: String, required: true},   //弹框类型（'add', 'edit'）
       formData: {type: Array, required: true}
     },
     computed: {

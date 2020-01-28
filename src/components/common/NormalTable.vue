@@ -97,9 +97,9 @@
     props: {
       data: {type: Array, required: true},
       header: {type: Array, default: () => []},
-      isAdding: {type: Boolean, default: false},
-      filterHandle: {type: Object, default: () => ({})},
-      toolbars: {type: Array, default: () => []}
+      isAdding: {type: Boolean, default: false},    //是否是新增状态
+      filterHandle: {type: Object, default: () => ({})},    //过滤函数
+      toolbars: {type: Array, default: () => []}    //表格上方工具栏
     },
     computed: {
       operation() {
