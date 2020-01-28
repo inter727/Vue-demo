@@ -26,7 +26,7 @@
             <el-date-picker v-else-if="item.type === 'date'" v-model="scope.row[item.prop]" :type="item.dateType || 'date'"
                             :format="getFormat(item.dateType)" :value-format="getFormat(item.dateType)"
                             :placeholder="item.placeholder || '请选择'"></el-date-picker>
-            <el-select v-else-if="item.type === 'select'" v-model="scope.row[item.prop]" :multiple="item.multiple">
+            <el-select v-else-if="item.type === 'select'" v-model="scope.row[item.prop]" :multiple="item.multiple" clearable>
               <el-option v-for="option in item.options" :key="option.value || option" :label="option.label || option"
                          :value="option.label || option"></el-option>
             </el-select>
@@ -104,10 +104,8 @@
     computed: {
       operation() {
         let operation = this.header.find(({ type }) => type === 'operation').operation
-        return Object.keys(operation).reduce((obj, key) => {
-          let tmObj = typeof operation[key] === 'object'
-            ?  operation[key]
-            : {type: operation[key], handles: this.handle[key]}
+        return Object.entries(operation).reduce((obj, [key, value]) => {
+          let tmObj = typeof value === 'object' ? value : {type: value, handles: this.handle[key]}
           return Object.assign(obj, {[key]: tmObj})
         }, {})
       },

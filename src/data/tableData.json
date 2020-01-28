@@ -11,7 +11,7 @@
       "isCloseM": "false", "sourceR": "3", "urlR": "3", "isCloseR": "false"},
     {"name": "总览", "date": "2020-01-12 09", "sourceL": "", "urlL": "4", "isCloseL": "false", "sourceM": "", "urlM": "5",
       "isCloseM": "false", "sourceR": "", "urlR": "6", "isCloseR": "false"},
-    {"name": "关闭信号源", "date": "2020-01-13 13", "sourceL": "", "urlL": "", "isCloseL": "true", "sourceM": "", "urlM": "",
+    {"name": "关闭", "date": "2020-01-13 13", "sourceL": "", "urlL": "", "isCloseL": "true", "sourceM": "", "urlM": "",
       "isCloseM": "true", "sourceR": "", "urlR": "", "isCloseR": "true"}
   ]
 }

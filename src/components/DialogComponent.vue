@@ -20,16 +20,16 @@
         data: [],
         projectHeader: [
           {prop: 'name', label: '方案名', readOnly: true, fixed: true, rules: [{required: true, message: '不能为空'}]},
-          {prop: 'date', label: '日期', type: 'date', width: 100, dateType: 'datetime'},
+          {prop: 'date', label: '日期', type: 'date', width: 120, dateType: 'datetime'},
           {
             prop: 'left',
             label: '左屏',
             type: 'group',
             span: 24,
             children: [
-              {prop: 'sourceL', label: '信号源', type: 'select', span: 8, options: []},
+              {prop: 'sourceL', label: '信号源', type: 'select', width: 100, span: 8, options: []},
               {prop: 'urlL', label: '页面', type: 'select', span: 8, options: []},
-              {prop: 'isCloseL', label: '是否关闭信号源', width: 100, type: 'select', span: 8,
+              {prop: 'isCloseL', label: '是否关闭信号源', type: 'select', span: 8,
                 labelWidth: '120px', options: []}
             ]
           },
@@ -39,9 +39,9 @@
             type: 'group',
             span: 24,
             children: [
-              {prop: 'sourceM', label: '信号源', type: 'select', span: 8, options: []},
+              {prop: 'sourceM', label: '信号源', type: 'select', width: 100, span: 8, options: []},
               {prop: 'urlM', label: '页面', type: 'select', span: 8, options: []},
-              {prop: 'isCloseM', label: '是否关闭信号源', width: 100, type: 'select', span: 8,
+              {prop: 'isCloseM', label: '是否关闭信号源', type: 'select', span: 8,
                 labelWidth: '120px', options: []}
             ]
           },
@@ -51,9 +51,9 @@
             type: 'group',
             span: 24,
             children: [
-              {prop: 'sourceR', label: '信号源', type: 'select', span: 8, options: []},
+              {prop: 'sourceR', label: '信号源', type: 'select', width: 100, span: 8, options: []},
               {prop: 'urlR', label: '页面', type: 'select', span: 8, options: []},
-              {prop: 'isCloseR', label: '是否关闭信号源', width: 100, type: 'select', span: 8,
+              {prop: 'isCloseR', label: '是否关闭信号源', type: 'select', span: 8,
                 labelWidth: '120px', options: []}
             ]
           },
@@ -61,6 +61,7 @@
             type: 'operation',
             label: '操作',
             width: 100,
+            fixed: 'right',
             operation: {default: {type: 'text', handles: ['edit', 'delete']}}
           }
         ],
