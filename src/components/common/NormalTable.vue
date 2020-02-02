@@ -182,11 +182,15 @@
   }
 
   .normal-table .el-date-editor .el-input__icon {
-    line-height: 32px;
+    line-height: 30px;
   }
 
   .normal-table .el-input__suffix .el-select__caret {
-    height: 34px;
+     height: 30px;
+   }
+
+  .normal-table .el-select__caret .el-input__icon {
+    line-height: 30px;
   }
 
   .normal-table .multiple-select {
