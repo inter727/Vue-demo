@@ -19,6 +19,7 @@
               </el-col>
             </el-row>
           </template>
+          <slot v-else-if="item.type === 'slot'" :name="item.prop"></slot>
           <el-form-item v-else :prop="item.prop" :label="item.label" :label-width="item.labelWidth">
             <el-date-picker v-if="item.type === 'date'" v-model="form[item.prop]" :type="item.dateType || 'date'"
                             :format="getFormat(item.dateType)" :value-format="getFormat(item.dateType)"

@@ -62,7 +62,9 @@
             label: '操作',
             width: 100,
             fixed: 'right',
-            operation: {default: {type: 'text', handles: ['edit', 'delete']}}
+            operation: {
+              default: {type: 'text', handles: ['edit', 'delete']}
+            }
           }
         ],
         sourceOptions: [

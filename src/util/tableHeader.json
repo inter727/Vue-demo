@@ -45,6 +45,12 @@
           {"text": "三日游", "value": "三日游"}]
       },
       {
+        "prop": "rate",
+        "label": "评分",
+        "type": "slot",
+        "width": 150
+      },
+      {
         "prop": "remark",
         "label": "备注",
         "type": "textarea",

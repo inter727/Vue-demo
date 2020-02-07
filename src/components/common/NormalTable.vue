@@ -23,6 +23,7 @@
                            @click="handleFunc(handle, scope.row, scope.$index)">{{operaConfig.button[handle].label}}</el-button>
               </template>
             </template>
+            <slot v-else-if="item.type === 'slot'" :name="item.prop"></slot>
             <el-date-picker v-else-if="item.type === 'date'" v-model="scope.row[item.prop]" :type="item.dateType || 'date'"
                             :format="getFormat(item.dateType)" :value-format="getFormat(item.dateType)"
                             :placeholder="item.placeholder || '请选择'"></el-date-picker>

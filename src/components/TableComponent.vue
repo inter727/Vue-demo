@@ -1,6 +1,9 @@
 <template>
   <normal-table :data="tableData" :header="headers" :stripe="true" :isAdding="isAdding" :filterHandle="filterHandle"
                 @row-dblclick="handleEdit" @save="handleSave" @cancel="handleCancel" @add="handleAdd" @delete="handleDelete">
+    <template #rate>
+      <el-rate v-model="rate"></el-rate>
+    </template>
   </normal-table>
 </template>
 <script>
@@ -13,6 +16,7 @@
         headers: tableSetting['header']['default'],
         tableData: [],
         beforeEditData: [],
+        rate: 0,
         isAdding: false,
         filterHandle: {
           days: this.filterDay
@@ -44,8 +48,8 @@
         this.clearData()
         let options = this.headers.find(({ prop }) => prop === 'days').options
         let daysObj = options.reduce((prev, { label, value }) => Object.assign(prev, {[value]: label}), {})
-        this.tableData = tableData['default'].map(({ name, tourists, days, remark }) => {
-          return {name, tourists: tourists.split(';'), days: daysObj[days], remark, editing: false}
+        this.tableData = tableData['default'].map(({ name, tourists, days, rate, remark }) => {
+          return {name, tourists: tourists.split(';'), days: daysObj[days], rate, remark, editing: false}
         })
       },
       clearData() {
@@ -57,6 +61,7 @@
           return
         }
         row.editing = true
+        this.rate = row.rate
       },
       handleCancel({ row, index }) {
         if (this.isAdding) {
@@ -73,6 +78,7 @@
         }
         this.isAdding = false
         row.editing = false
+        row.rate = this.rate
         this.$set(this.tableData, index, row)
       },
       handleAdd({ row, index }) {
@@ -82,7 +88,7 @@
         }
         this.isAdding = true
         this.tableData.splice(index + 1, 0,
-          {name: '', tourist: [], days: '一日游', remark: '', editing: true})
+          {name: '', tourist: [], days: '一日游', rate: 0, remark: '', editing: true})
       },
       handleDelete({ row, index }) {
         this.$confirm('是否删除该行数据', '提醒', {
