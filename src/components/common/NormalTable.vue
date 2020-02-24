@@ -17,7 +17,7 @@
           <template v-if="scope.row.editing">
             <template v-if="item.type === 'operation'">
               <template v-for="handle in operation.editing.handles">
-                <i v-if="operation.editing.type === 'icon'" :class="operaConfig.icon[handle].class"
+                <i v-if="operation.editing.type === 'icon'" :key="handle" :class="operaConfig.icon[handle].class"
                    :style="operaConfig.icon[handle].style" @click="handleFunc(handle, scope.row, scope.$index)"></i>
                 <el-button v-else :type="operaConfig[operation.editing.type][handle].type" :key="handle" size="mini"
                            @click="handleFunc(handle, scope.row, scope.$index)">{{operaConfig.button[handle].label}}</el-button>
@@ -36,7 +36,7 @@
           </template>
           <template v-else-if="item.type === 'operation'">
             <template v-for="handle in operation.default.handles">
-              <i v-if="operation.default.type === 'icon'" :class="operaConfig.icon[handle].class"
+              <i v-if="operation.default.type === 'icon'" :key="handle" :class="operaConfig.icon[handle].class"
                  :style="operaConfig.icon[handle].style" @click="handleFunc(handle, scope.row, scope.$index)"></i>
               <el-button v-else :type="operaConfig[operation.default.type][handle].type" :key="handle" size="mini"
                          @click="handleFunc(handle, scope.row, scope.$index)">{{operaConfig.button[handle].label}}</el-button>
