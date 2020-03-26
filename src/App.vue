@@ -4,6 +4,7 @@
       <li><router-link to="/home">首页</router-link></li>
       <li><router-link to="/tableComponent">表格</router-link></li>
       <li><router-link to="/dialogComponent">弹框</router-link></li>
+      <li><router-link to="/map">地图</router-link></li>
     </ul>
     <div class="router">
       <router-view></router-view>

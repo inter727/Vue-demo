@@ -3,6 +3,7 @@
     <li>首页</li>
     <li>表格</li>
     <li>弹框</li>
+    <li>地图</li>
   </ul>
 </template>
 <script>

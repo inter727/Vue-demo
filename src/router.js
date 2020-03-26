@@ -6,6 +6,7 @@ import VueRouter from 'vue-router'
 import Home from './components/Home.vue'
 import TableComponent from './components/TableComponent'
 import DialogComponent from './components/DialogComponent'
+import Map from './components/Map'
 
 Vue.use(VueRouter)
 
@@ -13,6 +14,7 @@ const routes = [
   {path: '/home', component: Home},
   {path: '/tableComponent', component: TableComponent},
   {path: '/dialogComponent', component: DialogComponent},
+  {path: '/map', component: Map},
   {path: '*', redirect: '/home'}
 ]
 
