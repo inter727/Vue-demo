@@ -1,17 +1,20 @@
 <template>
-  <div id="map"></div>
+  <div class="map-wrapper">
+    <div id="map"></div>
+    <div class="button-group">
+      <el-button size="small" @click="toggleLayer('vec')">行政图</el-button>
+      <el-button size="small" @click="toggleLayer('img')">卫星图</el-button>
+      <el-button size="small" @click="toggleLayer('ter')">地形图</el-button>
+    </div>
+  </div>
 </template>
 
 <script>
   import { Map, View } from 'ol'
-  import TileLayer from 'ol/layer/Tile'
-  import VectorLayer from 'ol/layer/Vector'
-  import XYZSource from 'ol/source/XYZ'
-  import VectorSource from 'ol/source/Vector'
-  import WKTFormat from 'ol/format/WKT'
-  import Style from 'ol/style/Style'
-  import Stroke from 'ol/style/Stroke'
-  import Fill from 'ol/style/Fill'
+  import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
+  import { XYZ, Vector as VectorSource } from 'ol/source'
+  import { WKT } from 'ol/format'
+  import { Style, Stroke, Fill } from 'ol/style'
   import mapLayer from '../../static/mapLayer'
 
   export default {
@@ -21,19 +24,36 @@
         map: null,
         base: 'tianditu.gov.cn/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=acdde43f9bf091f2383b721ed1aa581f',
         normal: 'tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=acdde43f9bf091f2383b721ed1aa581f',
+        satellite: 'tianditu.gov.cn/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=acdde43f9bf091f2383b721ed1aa581f',
+        landform: 'tianditu.gov.cn/DataServer?T=ter_w&x={x}&y={y}&l={z}&tk=acdde43f9bf091f2383b721ed1aa581f',
         mapLayer: {}
       }
     },
     methods: {
       initMap() {
         const base = new TileLayer({
-          visible: true,
-          source: new XYZSource({url: `http://t${Math.round(Math.random() * 7)}.${this.base}`})
+          source: new XYZ({
+            url: `http://t${Math.round(Math.random() * 7)}.${this.base}`
+          })
         })
         const normal = new TileLayer({
-          visible: true,
-          source: new XYZSource({url: `http://t${Math.round(Math.random() * 7)}.${this.normal}`})
+          source: new XYZ({
+            url: `http://t${Math.round(Math.random() * 7)}.${this.normal}`
+          })
         })
+        const satellite = new TileLayer({
+          source: new XYZ({
+            url: `http://t${Math.round(Math.random() * 7)}.${this.satellite}`
+          }),
+          visible: false
+        })
+        const landform = new TileLayer({
+          source: new XYZ({
+            url: `http://t${Math.round(Math.random() * 7)}.${this.landform}`
+          }),
+          visible: false
+        })
+
         this.map = new Map({
           target: 'map',
           view: new View({
@@ -42,18 +62,18 @@
             zoom: 7,
             minZoom: 7
           }),
-          layers: [normal, base],
+          layers: [landform, satellite, normal, base],
           controls: []
         })
       },
       addLayer() {
         Promise.resolve(mapLayer).then(res => {
-          const format = new WKTFormat()
-          const shape = format.readFeature(res.result.shape, {
+          const WKTFormat = new WKT()
+          const shape = WKTFormat.readFeature(res.result.shape, {
             dataProjection: 'EPSG:4326',
             featureProjection: 'EPSG:4326'
           })
-          const layer = format.readFeature(res.result.json, {
+          const layer = WKTFormat.readFeature(res.result.json, {
             dataProjection: 'EPSG:4326',
             featureProjection: 'EPSG:4326'
           })
@@ -82,6 +102,13 @@
           this.mapLayer.vector.getSource().addFeature(layer)
           this.map.addLayer(this.mapLayer.vector)
         })
+      },
+      toggleLayer(str) {
+        this.map.getLayers().forEach(layer => {
+          let source = layer.getSource()
+          if (!source.urls || !source.urls.length) { return }
+          layer.setVisible(/cva/.test(source.urls[0]) || new RegExp(str).test(source.urls[0]))
+        })
       }
     },
     mounted() {
@@ -92,7 +119,18 @@
 </script>
 
 <style scoped>
+  .map-wrapper {
+    position: relative;
+    height: 100%;
+  }
+
   #map {
     height: 100%;
+  }
+
+  .button-group {
+    position: absolute;
+    top: 20px;
+    left: 20px;
   }
 </style>
