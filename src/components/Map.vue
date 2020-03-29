@@ -6,6 +6,10 @@
       <el-button size="small" @click="toggleLayer('img')">卫星图</el-button>
       <el-button size="small" @click="toggleLayer('ter')">地形图</el-button>
     </div>
+    <el-select class="area-select" v-model="area" clearable placeholder="请选择流域分区"
+               @change="addAreaLayer" @clear="clearAreaLayer">
+      <el-option v-for="area in areas" :key="area" :label="area" :value="area"></el-option>
+    </el-select>
   </div>
 </template>
 
@@ -13,9 +17,10 @@
   import { Map, View } from 'ol'
   import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
   import { XYZ, Vector as VectorSource } from 'ol/source'
-  import { WKT } from 'ol/format'
+  import { WKT, GeoJSON } from 'ol/format'
   import { Style, Stroke, Fill } from 'ol/style'
   import mapLayer from '../../static/mapLayer'
+  import drainageBasin from '../../static/drainageBasin'
 
   export default {
     name: "Map",
@@ -26,7 +31,9 @@
         normal: 'tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=acdde43f9bf091f2383b721ed1aa581f',
         satellite: 'tianditu.gov.cn/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=acdde43f9bf091f2383b721ed1aa581f',
         landform: 'tianditu.gov.cn/DataServer?T=ter_w&x={x}&y={y}&l={z}&tk=acdde43f9bf091f2383b721ed1aa581f',
-        mapLayer: {}
+        mapLayer: {},
+        area: '',
+        areas: ['石泉水库以上', '石泉水库至白河水文站', '白河水文站至丹江口', '丹江河流域', '库周流域', '堵河流域']
       }
     },
     methods: {
@@ -103,6 +110,47 @@
           this.map.addLayer(this.mapLayer.vector)
         })
       },
+      addAreaLayer(val) {
+        if (!val) { return }
+
+        if ('areaVector' in this.mapLayer) {
+          this.mapLayer.areaVector.setVisible(true)
+          this.mapLayer.areaVector.getSource().clear()
+        } else {
+          this.mapLayer.areaVector = new VectorLayer({
+            source: new VectorSource()
+          })
+          this.map.addLayer(this.mapLayer.areaVector)
+        }
+
+        const target = drainageBasin.features.find(({ properties: { name } }) => name === val)
+        const geoFeature = new GeoJSON().readFeature(target)
+        const WKTFormat = new WKT()
+        const areaLayer = WKTFormat.readFeature(WKTFormat.writeFeature(geoFeature), {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:4326'
+        })
+
+        this.map.getView().fit(areaLayer.getGeometry(), {
+          size: this.map.getSize(),
+          constrainResolution: false,
+          padding: [50, 50, 50, 50],
+        })
+        areaLayer.setStyle(new Style({
+          fill: new Fill({
+            color: 'rgba(204, 255, 204, 0.5)'
+          }),
+          stroke: new Stroke({
+            color: '#94ffe0',
+            width: 2
+          })
+        }))
+        this.mapLayer.areaVector.getSource().addFeature(areaLayer)
+      },
+      clearAreaLayer() {
+        this.mapLayer.areaVector.setVisible(false)
+        this.mapLayer.areaVector.getSource().clear()
+      },
       toggleLayer(str) {
         this.map.getLayers().forEach(layer => {
           let source = layer.getSource()
@@ -132,5 +180,11 @@
     position: absolute;
     top: 20px;
     left: 20px;
+  }
+
+  .area-select {
+    position: absolute;
+    top: 20px;
+    right: 20px;
   }
 </style>
