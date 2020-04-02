@@ -5,6 +5,7 @@
       <el-button size="small" @click="toggleLayer('vec')">行政图</el-button>
       <el-button size="small" @click="toggleLayer('img')">卫星图</el-button>
       <el-button size="small" @click="toggleLayer('ter')">地形图</el-button>
+      <el-button size="small" @click="measure">测距</el-button>
     </div>
     <el-select class="area-select" v-model="area" clearable placeholder="请选择流域分区"
                @change="addAreaLayer" @clear="clearAreaLayer">
@@ -14,11 +15,12 @@
 </template>
 
 <script>
-  import { Map, View } from 'ol'
+  import { Map, View, Overlay } from 'ol'
   import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
   import { XYZ, Vector as VectorSource } from 'ol/source'
   import { WKT, GeoJSON } from 'ol/format'
-  import { Style, Stroke, Fill } from 'ol/style'
+  import { Style, Stroke, Fill, Circle } from 'ol/style'
+  import { Draw } from 'ol/interaction'
   import mapLayer from '../../static/mapLayer'
   import drainageBasin from '../../static/drainageBasin'
 
@@ -33,7 +35,12 @@
         landform: 'tianditu.gov.cn/DataServer?T=ter_w&x={x}&y={y}&l={z}&tk=acdde43f9bf091f2383b721ed1aa581f',
         mapLayer: {},
         area: '',
-        areas: ['石泉水库以上', '石泉水库至白河水文站', '白河水文站至丹江口', '丹江河流域', '库周流域', '堵河流域']
+        areas: ['石泉水库以上', '石泉水库至白河水文站', '白河水文站至丹江口', '丹江河流域', '库周流域', '堵河流域'],
+        isMeasure: false,
+        tooltipElement: {
+          measure: null,
+          help: null
+        }
       }
     },
     methods: {
@@ -157,11 +164,90 @@
           if (!source.urls || !source.urls.length) { return }
           layer.setVisible(/cva/.test(source.urls[0]) || new RegExp(str).test(source.urls[0]))
         })
+      },
+      initMeasureLayer() {
+        this.mapLayer.measure = new VectorLayer({
+          source: new VectorSource(),
+          style: new Style({
+            fill: new Fill({
+              color: 'rgba(255, 255, 255, 0.2)'
+            }),
+            stroke: new Stroke({
+              color: '#ffcc33',
+              width: 2
+            }),
+            image: new Circle({
+              radius: 7,
+              fill: new Fill({
+                color: '#ffcc33'
+              })
+            })
+          })
+        })
+      },
+      measure() {
+        this.isMeasure = !this.isMeasure
+        this.map.addLayer(this.mapLayer.measure)
+      },
+      //绘制控件交互功能
+      addInteraction() {
+        const draw = new Draw({
+          source: this.mapLayer.measure.getSource(),
+          type: ('LineString'),
+          style: new Style({
+            fill: new Fill({
+              color: 'rgba(255, 255, 255, 0.2)'
+            }),
+            stroke: new Stroke({
+              color: 'rgba(0, 0, 0, 0.5)',
+              lineDash: [10, 10],
+              width: 2
+            }),
+            image: new Circle({
+              radius: 5,
+              stroke: new Stroke({
+                color: 'rgba(0, 0, 0, 0.7)'
+              }),
+              fill: new Fill({
+                color: 'rgba(255, 255, 255, 0.2)'
+              })
+            })
+          })
+        })
+        this.map.addInteraction(draw)
+        this.createTooltip({
+          type: 'measure',
+          className: 'tooltip tooltip-measure',
+          offset: [0, -15],
+          positioning: 'bottom-center'
+        })
+        this.createTooltip({
+          type: 'help',
+          className: 'tooltip hidden',
+          offset: [15, 0],
+          positioning: 'center-left'
+        })
+      },
+      //创建工具提示框
+      createTooltip({ type, className, offset, positioning }) {
+        let tooltipEle = this.tooltipElement[type]
+        if (tooltipEle) {
+          tooltipEle.parentNode.removeChild(tooltipEle)
+        }
+        tooltipEle = document.createElement('div')
+        tooltipEle.className = className
+        this.map.addOverlay(new Overlay({
+          element: tooltipEle,
+          offset,
+          positioning
+        }))
+        this.tooltipElement[type] = tooltipEle
       }
     },
     mounted() {
       this.initMap()
       this.addLayer()
+      this.initMeasureLayer()
     }
   }
 </script>
