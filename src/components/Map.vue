@@ -15,12 +15,15 @@
 </template>
 
 <script>
-  import { Map, View, Overlay } from 'ol'
+  import { Map, View, Overlay, Observable } from 'ol'
   import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
   import { XYZ, Vector as VectorSource } from 'ol/source'
   import { WKT, GeoJSON } from 'ol/format'
   import { Style, Stroke, Fill, Circle } from 'ol/style'
   import { Draw } from 'ol/interaction'
+  import { LineString } from 'ol/geom'
+  import { transform } from 'ol/proj'
+  import { Sphere } from '../../static/ol-debug'
   import mapLayer from '../../static/mapLayer'
   import drainageBasin from '../../static/drainageBasin'
 
@@ -40,7 +43,12 @@
         tooltipElement: {
           measure: null,
           help: null
-        }
+        },
+        tooltip: {
+          measure: null,
+          help: null
+        },
+        sketch: null    //绘制的要素
       }
     },
     methods: {
@@ -193,7 +201,7 @@
       addInteraction() {
         const draw = new Draw({
           source: this.mapLayer.measure.getSource(),
-          type: ('LineString'),
+          type: 'LineString',
           style: new Style({
             fill: new Fill({
               color: 'rgba(255, 255, 255, 0.2)'
@@ -227,22 +235,60 @@
           offset: [15, 0],
           positioning: 'center-left'
         })
+
+        //绑定绘制事件
+        let listener
+        draw.on('drawstart', e => {
+          this.sketch = e.feature
+          listener = this.sketch.getGeometry()
+            .on('change', e => {
+              let output, geom = e.target
+              if (geom instanceof LineString) {
+                output = this.formatLength(geom)
+                e.coordinate = geom.getLastCoordinate()
+              }
+              this.tooltipElement.measure.innerHTML = output
+              this.tooltip.measure.setPosition(e.coordinate)
+          })
+        })
+        draw.on('drawend', e => {
+          this.tooltipElement.measure.className = 'tooltip tooltip-static'
+          this.tooltip.measure.setOffset([0, -7])
+          this.sketch = null
+          this.createTooltip({
+            type: 'measure',
+            className: 'tooltip tooltip-measure',
+            offset: [0, -15],
+            positioning: 'bottom-center'
+          })
+          Observable.unByKey(listener)
+        })
       },
       //创建工具提示框
       createTooltip({ type, className, offset, positioning }) {
-        let tooltipEle = this.tooltipElement[type]
-        if (tooltipEle) {
-          tooltipEle.parentNode.removeChild(tooltipEle)
+        let element = this.tooltipElement[type]
+        if (element) {
+          element.parentNode.removeChild(element)
         }
-        tooltipEle = document.createElement('div')
-        tooltipEle.className = className
-        this.map.addOverlay(new Overlay({
-          element: tooltipEle,
-          offset,
-          positioning
-        }))
-        this.tooltipElement[type] = tooltipEle
-      }
+        element = document.createElement('div')
+        element.className = className
+        this.tooltip[type] = new Overlay({element, offset, positioning})
+        this.map.addOverlay(this.tooltip[type])
+        this.tooltipElement[type] = element
+      },
+      //输出测量长度
+      formatLength(line) {
+        let wgs84Sphere = new Sphere(6378137),   //定义一个球对象
+          sourceProj = this.map.getView().getProjection(),  //地图数据源投影坐标系
+          length = 0
+        //通过遍历坐标计算两点之前距离，进而得到整条线的长度
+        for (let i = 0, coordinates = line.getCoordinates(); i < coordinates.length - 1; i++) {
+          let p1 = transform(coordinates[i], sourceProj, 'EPSG:4326'),
+            p2 = transform(coordinates[i + 1], sourceProj, 'EPSG:4326')
+          length += wgs84Sphere.haversineDistance(p1, p2)
+        }
+        return length > 100 ? `${Math.round(length / 1000)} km` : `${Math.round(length)} m`
+      },
     },
     mounted() {
       this.initMap()
