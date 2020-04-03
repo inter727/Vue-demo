@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import { Map, View, Overlay, Observable } from 'ol'
+  import { Map, View, Overlay } from 'ol'
   import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
   import { XYZ, Vector as VectorSource } from 'ol/source'
   import { WKT, GeoJSON } from 'ol/format'
@@ -23,6 +23,7 @@
   import { Draw } from 'ol/interaction'
   import { LineString } from 'ol/geom'
   import { transform } from 'ol/proj'
+  import { unByKey } from 'ol/Observable'
   import { Sphere } from '../../static/ol-debug'
   import mapLayer from '../../static/mapLayer'
   import drainageBasin from '../../static/drainageBasin'
@@ -40,6 +41,7 @@
         area: '',
         areas: ['石泉水库以上', '石泉水库至白河水文站', '白河水文站至丹江口', '丹江河流域', '库周流域', '堵河流域'],
         isMeasure: false,
+        draw: null,
         tooltipElement: {
           measure: null,
           help: null
@@ -195,11 +197,26 @@
       },
       measure() {
         this.isMeasure = !this.isMeasure
-        this.map.addLayer(this.mapLayer.measure)
+        if (this.isMeasure) {
+          this.map.addLayer(this.mapLayer.measure)
+          //地图容器绑定鼠标移动事件，动态显示帮助提示框内容
+          this.map.addEventListener('pointermove', this.pointerMoveHandle)
+          this.map.addEventListener('mouseout', () => {
+            this.tooltipElement.help.classList.add('hidden')
+          })
+          this.addInteraction()
+          return
+        }
+        this.map.removeInteraction(this.draw)
+        this.mapLayer.measure.getSource().clear()
+        this.map.removeLayer(this.mapLayer.measure)
+        this.map.removeEventListener('pointermove', this.pointerMoveHandle)
+        this.tooltipElement.measure.classList.add('hidden')
+        this.tooltipElement.help.classList.add('hidden')
       },
       //绘制控件交互功能
       addInteraction() {
-        const draw = new Draw({
+        this.draw = new Draw({
           source: this.mapLayer.measure.getSource(),
           type: 'LineString',
           style: new Style({
@@ -222,7 +239,7 @@
             })
           })
         })
-        this.map.addInteraction(draw)
+        this.map.addInteraction(this.draw)
         this.createTooltip({
           type: 'measure',
           className: 'tooltip tooltip-measure',
@@ -238,7 +255,7 @@
 
         //绑定绘制事件
         let listener
-        draw.on('drawstart', e => {
+        this.draw.on('drawstart', e => {
           this.sketch = e.feature
           listener = this.sketch.getGeometry()
             .on('change', e => {
@@ -251,7 +268,7 @@
               this.tooltip.measure.setPosition(e.coordinate)
           })
         })
-        draw.on('drawend', e => {
+        this.draw.on('drawend', e => {
           this.tooltipElement.measure.className = 'tooltip tooltip-static'
           this.tooltip.measure.setOffset([0, -7])
           this.sketch = null
@@ -261,7 +278,7 @@
             offset: [0, -15],
             positioning: 'bottom-center'
           })
-          Observable.unByKey(listener)
+          unByKey(listener)
         })
       },
       //创建工具提示框
@@ -289,6 +306,15 @@
         }
         return length > 100 ? `${Math.round(length / 1000)} km` : `${Math.round(length)} m`
       },
+      //鼠标移动事件回调函数
+      pointerMoveHandle(e) {
+        if (e.dragging) { return }
+
+        this.tooltip.help.setPosition(e.coordinate)
+        this.tooltipElement.help.classList.remove('hidden')
+        //提示信息在对话框中显示
+        this.tooltipElement.help.innerHTML = this.sketch ? '单击继续绘制，双击结束绘制' : '单击开始绘制'
+      }
     },
     mounted() {
       this.initMap()
