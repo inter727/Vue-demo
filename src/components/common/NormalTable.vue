@@ -43,6 +43,7 @@
             </template>
           </template>
           <el-tag v-else-if="item.tag" v-for="tag in scope.row[item.prop]" :key="tag">{{tag}}</el-tag>
+          <a v-else-if="item.link" :href="scope.row[item.prop]" style="color: #409eff" target="_blank">{{scope.row[item.prop]}}</a>
           <template v-else>{{scope.row[item.prop]}}</template>
         </template>
       </el-table-column>
@@ -187,10 +188,7 @@
   }
 
   .normal-table .el-input__suffix .el-select__caret {
-     height: 30px;
-   }
-
-  .normal-table .el-select__caret .el-input__icon {
+    height: 30px;
     line-height: 30px;
   }
 

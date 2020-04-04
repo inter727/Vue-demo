@@ -1,10 +1,10 @@
 {
   "default": [
-    {"name": "张三", "tourists": "东湖;武汉大学;省博物馆", "days": 1, "rate": 4, "remark": "不去户部巷，去粮道街或水陆街过早"},
-    {"name": "李四", "tourists": "东湖;欢乐谷;光谷风情街", "days": 2, "rate": 3, "remark": "不想看名胜古迹"},
-    {"name": "王五", "tourists": "东湖;黄鹤楼;古琴台;省博物馆", "days": 3, "rate": 5, "remark": "不带我去户部巷就行，去其他地方吃饭都可以"},
-    {"name": "陈六", "tourists": "汉口江滩;江汉路步行街", "days": 1, "rate": 3, "remark": "我要去国广买爱马仕，然后去万松园吃小龙虾"},
-    {"name": "赵七", "tourists": "东湖;长江大桥;武汉大学;楚河汉街", "days": 2, "rate": 4, "remark": "不去光谷那边，路太破了"}
+    {"name": "张三", "tourists": "东湖;武汉大学;省博物馆", "days": 1, "remark": "不去户部巷，去粮道街或水陆街过早"},
+    {"name": "李四", "tourists": "东湖;欢乐谷;光谷风情街", "days": 2, "remark": "不想看名胜古迹"},
+    {"name": "王五", "tourists": "东湖;黄鹤楼;古琴台;省博物馆", "days": 3, "remark": "不带我去户部巷就行，去其他地方吃饭都可以"},
+    {"name": "陈六", "tourists": "汉口江滩;江汉路步行街", "days": 1, "remark": "我要去国广买爱马仕，然后去万松园吃小龙虾"},
+    {"name": "赵七", "tourists": "东湖;长江大桥;武汉大学;楚河汉街", "days": 2, "remark": "不去光谷那边，路太破了"}
   ],
   "project": [
     {"name": "介绍", "date": "2020-01-11 08", "sourceL": "1", "urlL": "1", "isCloseL": "false", "sourceM": "2", "urlM": "2",
