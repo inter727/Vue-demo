@@ -24,7 +24,6 @@
   import { LineString } from 'ol/geom'
   import { transform } from 'ol/proj'
   import { unByKey } from 'ol/Observable'
-  import { Sphere } from '../../static/ol-debug'
   import mapLayer from '../../static/mapLayer'
   import drainageBasin from '../../static/drainageBasin'
 
@@ -295,7 +294,7 @@
       },
       //输出测量长度
       formatLength(line) {
-        let wgs84Sphere = new Sphere(6378137),   //定义一个球对象
+        let wgs84Sphere = new ol.Sphere(6378137),   //定义一个球对象
           sourceProj = this.map.getView().getProjection(),  //地图数据源投影坐标系
           length = 0
         //通过遍历坐标计算两点之前距离，进而得到整条线的长度
