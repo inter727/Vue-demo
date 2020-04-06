@@ -77,8 +77,10 @@
               :format="getFormat(item.dateType)"
               :value-format="getFormat(item.dateType)"
               :placeholder="item.placeholder || '请选择'"
+              :disabled="item.readOnly && !isAdding"
             ></el-date-picker>
-            <el-select v-else-if="item.type === 'select'" v-model="scope.row[item.prop]" :multiple="item.multiple" clearable>
+            <el-select v-else-if="item.type === 'select'" v-model="scope.row[item.prop]" :multiple="item.multiple"
+                       :disabled="item.readOnly && !isAdding" clearable>
               <el-option
                 v-for="option in item.options"
                 :key="option.value || option"

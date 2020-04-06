@@ -30,7 +30,17 @@
             <el-row>
               <el-col v-for="child in item.children" :key="child.prop" :span="child.span || 12">
                 <el-form-item :prop="child.prop" :label="child.label" :label-width="child.labelWidth">
-                  <el-select v-if="child.type === 'select'" v-model="form[child.prop]" :multiple="child.multiple" clearable>
+                  <el-date-picker
+                    v-if="child.type === 'date'"
+                    v-model="form[child.prop]"
+                    :type="child.dateType || 'date'"
+                    :format="getFormat(child.dateType)"
+                    :value-format="getFormat(child.dateType)"
+                    :placeholder="child.placeholder || '请选择'"
+                    :disabled="dialogType === 'edit' && child.readOnly"
+                  ></el-date-picker>
+                  <el-select v-else-if="child.type === 'select'" v-model="form[child.prop]" :multiple="child.multiple" 
+                             :disabled="dialogType === 'edit' && child.readOnly" clearable>
                     <el-option
                       v-for="option in child.options"
                       :key="option.value || option"
@@ -57,8 +67,10 @@
               :format="getFormat(item.dateType)"
               :value-format="getFormat(item.dateType)"
               :placeholder="item.placeholder || '请选择'"
+              :disabled="dialogType === 'edit' && item.readOnly"
             ></el-date-picker>
-            <el-select v-else-if="item.type === 'select'" v-model="form[item.prop]" :multiple="item.multiple" clearable>
+            <el-select v-else-if="item.type === 'select'" v-model="form[item.prop]" :multiple="item.multiple"
+                       :disabled="dialogType === 'edit' && item.readOnly" clearable>
               <el-option
                 v-for="option in item.options"
                 :key="option.value || option"
