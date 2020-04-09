@@ -55,22 +55,26 @@
     },
     methods: {
       initMap() {
+        // 底图
         const base = new TileLayer({
           source: new XYZ({
             url: `http://t${Math.round(Math.random() * 7)}.${this.base}`
           })
         })
+        // 行政图
         const normal = new TileLayer({
           source: new XYZ({
             url: `http://t${Math.round(Math.random() * 7)}.${this.normal}`
           })
         })
+        // 卫星图
         const satellite = new TileLayer({
           source: new XYZ({
             url: `http://t${Math.round(Math.random() * 7)}.${this.satellite}`
           }),
           visible: false
         })
+        // 地形图
         const landform = new TileLayer({
           source: new XYZ({
             url: `http://t${Math.round(Math.random() * 7)}.${this.landform}`
@@ -90,13 +94,16 @@
           controls: []
         })
       },
+      // 添加汉江流域图层
       addLayer() {
         Promise.resolve(mapLayer).then(res => {
           const WKTFormat = new WKT()
+          // 汉江流域轮廓
           const shape = WKTFormat.readFeature(res.result.shape, {
             dataProjection: 'EPSG:4326',
             featureProjection: 'EPSG:4326'
           })
+          // 汉江流域外加上遮罩层
           const layer = WKTFormat.readFeature(res.result.json, {
             dataProjection: 'EPSG:4326',
             featureProjection: 'EPSG:4326'
@@ -127,6 +134,7 @@
           this.map.addLayer(this.mapLayer.vector)
         })
       },
+      // 添加对应流域遮罩
       addAreaLayer(val) {
         if (!val) { return }
 
@@ -199,7 +207,7 @@
         this.isMeasure = !this.isMeasure
         if (this.isMeasure) {
           this.map.addLayer(this.mapLayer.measure)
-          //地图容器绑定鼠标移动事件，动态显示帮助提示框内容
+          // 地图容器绑定鼠标移动事件，动态显示帮助提示框内容
           this.map.addEventListener('pointermove', this.pointerMoveHandle)
           this.map.addEventListener('mouseout', () => {
             this.tooltipElement.help.classList.add('hidden')
@@ -214,7 +222,7 @@
         this.tooltipElement.measure.classList.add('hidden')
         this.tooltipElement.help.classList.add('hidden')
       },
-      //绘制控件交互功能
+      // 绘制控件交互功能
       addInteraction() {
         this.draw = new Draw({
           source: this.mapLayer.measure.getSource(),
@@ -253,7 +261,7 @@
           positioning: 'center-left'
         })
 
-        //绑定绘制事件
+        // 绑定绘制事件
         let listener
         this.draw.on('drawstart', e => {
           this.sketch = e.feature
@@ -281,7 +289,7 @@
           unByKey(listener)
         })
       },
-      //创建工具提示框
+      // 创建工具提示框
       createTooltip({ type, className, offset, positioning }) {
         let element = this.tooltipElement[type]
         if (element) {
@@ -293,11 +301,11 @@
         this.map.addOverlay(this.tooltip[type])
         this.tooltipElement[type] = element
       },
-      //输出测量长度
+      // 输出测量长度
       formatLength(line) {
         let sourceProj = this.map.getView().getProjection(),  //地图数据源投影坐标系
           length = 0
-        //通过遍历坐标计算两点之间距离，进而得到整条线的长度
+        // 通过遍历坐标计算两点之间距离，进而得到整条线的长度
         for (let i = 0, coordinates = line.getCoordinates(); i < coordinates.length - 1; i++) {
           let p1 = transform(coordinates[i], sourceProj, 'EPSG:4326'),
             p2 = transform(coordinates[i + 1], sourceProj, 'EPSG:4326')
@@ -305,13 +313,13 @@
         }
         return length > 100 ? `${Math.round(length / 1000)} km` : `${Math.round(length)} m`
       },
-      //鼠标移动事件回调函数
+      // 鼠标移动事件回调函数
       pointerMoveHandle(e) {
         if (e.dragging) { return }
 
         this.tooltip.help.setPosition(e.coordinate)
         this.tooltipElement.help.classList.remove('hidden')
-        //提示信息在对话框中显示
+        // 提示信息在对话框中显示
         this.tooltipElement.help.innerHTML = this.sketch ? '单击继续绘制，双击结束绘制' : '单击开始绘制'
       }
     },
