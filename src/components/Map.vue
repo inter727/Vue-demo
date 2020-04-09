@@ -22,6 +22,7 @@
   import { Style, Stroke, Fill, Circle } from 'ol/style'
   import { Draw } from 'ol/interaction'
   import { LineString } from 'ol/geom'
+  import { getDistance } from 'ol/sphere'
   import { transform } from 'ol/proj'
   import { unByKey } from 'ol/Observable'
   import mapLayer from '../../static/mapLayer'
@@ -294,14 +295,13 @@
       },
       //输出测量长度
       formatLength(line) {
-        let wgs84Sphere = new ol.Sphere(6378137),   //定义一个球对象
-          sourceProj = this.map.getView().getProjection(),  //地图数据源投影坐标系
+        let sourceProj = this.map.getView().getProjection(),  //地图数据源投影坐标系
           length = 0
-        //通过遍历坐标计算两点之前距离，进而得到整条线的长度
+        //通过遍历坐标计算两点之间距离，进而得到整条线的长度
         for (let i = 0, coordinates = line.getCoordinates(); i < coordinates.length - 1; i++) {
           let p1 = transform(coordinates[i], sourceProj, 'EPSG:4326'),
             p2 = transform(coordinates[i + 1], sourceProj, 'EPSG:4326')
-          length += wgs84Sphere.haversineDistance(p1, p2)
+          length += getDistance(p1, p2)
         }
         return length > 100 ? `${Math.round(length / 1000)} km` : `${Math.round(length)} m`
       },
