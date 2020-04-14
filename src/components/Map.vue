@@ -6,6 +6,7 @@
       <el-button size="small" @click="toggleLayer('img')">卫星图</el-button>
       <el-button size="small" @click="toggleLayer('ter')">地形图</el-button>
       <el-button size="small" @click="measure">测距</el-button>
+      <el-button size="small" @click="addHeatMap">热力图</el-button>
     </div>
     <el-select class="area-select" v-model="area" clearable placeholder="请选择流域分区"
                @change="addAreaLayer" @clear="clearAreaLayer">
@@ -16,7 +17,7 @@
 
 <script>
   import { Map, View, Overlay } from 'ol'
-  import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
+  import { Tile as TileLayer, Vector as VectorLayer, Heatmap } from 'ol/layer'
   import { XYZ, Vector as VectorSource } from 'ol/source'
   import { WKT, GeoJSON } from 'ol/format'
   import { Style, Stroke, Fill, Circle } from 'ol/style'
@@ -50,7 +51,37 @@
           measure: null,
           help: null
         },
-        sketch: null    //绘制的要素
+        sketch: null,    //绘制的要素
+        heatData: {
+          type: 'FeatureCollection',
+          features: [
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 112.40, 31.19 ] }, properties: { weight: 0.9 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 113.30, 30.60 ] }, properties: { weight: 0.19 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 123.30, 30.60 ] }, properties: { weight: 0.419 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 105.30, 30.60 ] }, properties: { weight: 0.319 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 106.30, 30.60 ] }, properties: { weight: 0.719 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 109.30, 31.60 ] }, properties: { weight: 0.519 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 109.30, 30.60 ] }, properties: { weight: 0.319 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 108.30, 32.60 ] }, properties: { weight: 0.139 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 118.30, 31.60 ] }, properties: { weight: 0.129 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 108.30, 33.60 ] }, properties: { weight: 0.190 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 108.30, 32.60 ] }, properties: { weight: 0.189 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 100.30, 30.60 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 109.30, 30.60 ] }, properties: { weight: 0.119 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 108.30, 31.60 ] }, properties: { weight: 0.200 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 118.30, 30.60 ] }, properties: { weight: 0.300 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 113.30, 23.60 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 112.214350, 23.3423 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 113.45656, 22.4545 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 113.78684, 22.1235 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 113.43543, 21.4378 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 112.506, 23.234 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 113.9087, 22.45345 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 113.8764, 23.1234 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 112.4753, 21.948 ] }, properties: { weight: 0.1 }},
+            { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 112.10, 23.789 ] }, properties: { weight: 0.1 }}
+          ]
+        },
       }
     },
     methods: {
@@ -88,7 +119,7 @@
             projection: 'EPSG:4326',
             center: [110.654, 32.589],
             zoom: 7,
-            minZoom: 7
+            minZoom: 3
           }),
           layers: [landform, satellite, normal, base],
           controls: []
@@ -321,6 +352,20 @@
         this.tooltipElement.help.classList.remove('hidden')
         // 提示信息在对话框中显示
         this.tooltipElement.help.innerHTML = this.sketch ? '单击继续绘制，双击结束绘制' : '单击开始绘制'
+      },
+      // 添加热力图
+      addHeatMap() {
+        const features = new GeoJSON().readFeatures(this.heatData, {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:4326'
+        })
+        const heatLayer = new Heatmap({
+          source: new VectorSource({ features, wrapX: false }),
+          blur: 21,
+          radius: 10
+        })
+
+        this.map.addLayer(heatLayer)
       }
     },
     mounted() {
