@@ -52,6 +52,8 @@
           help: null
         },
         sketch: null,    //绘制的要素
+        isHeatMap: false,
+        timer: null,
         heatData: {
           type: 'FeatureCollection',
           features: [
@@ -355,17 +357,39 @@
       },
       // 添加热力图
       addHeatMap() {
-        const features = new GeoJSON().readFeatures(this.heatData, {
+        this.isHeatMap = !this.isHeatMap
+
+        // 点击偶数次移除热力图图层，清除定时器
+        if (!this.isHeatMap) {
+          this.map.removeLayer(this.mapLayer.heatMap)
+          window.clearInterval(this.timer)
+          return
+        }
+
+        let features = new GeoJSON().readFeatures(this.heatData, {
           dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:4326'
         })
-        const heatLayer = new Heatmap({
-          source: new VectorSource({ features, wrapX: false }),
-          blur: 21,
-          radius: 10
-        })
+        const source = new VectorSource({ features, wrapX: false })
+        this.mapLayer.heatMap = new Heatmap({ source, blur: 21, radius: 10 })
+        this.map.addLayer(this.mapLayer.heatMap)
 
-        this.map.addLayer(heatLayer)
+        // 用定时器模拟动态刷新
+        this.timer = window.setInterval(() => {
+          this.changeHeatData()
+          source.clear()
+          features = new GeoJSON().readFeatures(this.heatData, {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:4326'
+          })
+          source.addFeatures(features)
+        }, 2000)
+      },
+      // 模拟数据变化
+      changeHeatData() {
+        this.heatData.features.forEach(item => {
+          item.properties.weight = Math.random()
+        })
       }
     },
     mounted() {
