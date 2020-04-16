@@ -238,6 +238,7 @@
       },
       measure() {
         this.isMeasure = !this.isMeasure
+
         if (this.isMeasure) {
           this.map.addLayer(this.mapLayer.measure)
           // 地图容器绑定鼠标移动事件，动态显示帮助提示框内容
@@ -248,12 +249,12 @@
           this.addInteraction()
           return
         }
+
         this.map.removeInteraction(this.draw)
         this.mapLayer.measure.getSource().clear()
         this.map.removeLayer(this.mapLayer.measure)
         this.map.removeEventListener('pointermove', this.pointerMoveHandle)
-        this.tooltipElement.measure.classList.add('hidden')
-        this.tooltipElement.help.classList.add('hidden')
+        this.removeMeasureElement()
       },
       // 绘制控件交互功能
       addInteraction() {
@@ -306,7 +307,7 @@
                 e.coordinate = geom.getLastCoordinate()
               }
               this.tooltipElement.measure.innerHTML = output
-              this.tooltip.measure.setPosition(e.coordinate)
+              this.tooltip.measure.setPosition(e.coordinate)  // 设置测量工具提示框的显示位置
           })
         })
         this.draw.on('drawend', e => {
@@ -325,9 +326,6 @@
       // 创建工具提示框
       createTooltip({ type, className, offset, positioning }) {
         let element = this.tooltipElement[type]
-        if (element) {
-          element.parentNode.removeChild(element)
-        }
         element = document.createElement('div')
         element.className = className
         this.tooltip[type] = new Overlay({element, offset, positioning})
@@ -354,6 +352,15 @@
         this.tooltipElement.help.classList.remove('hidden')
         // 提示信息在对话框中显示
         this.tooltipElement.help.innerHTML = this.sketch ? '单击继续绘制，双击结束绘制' : '单击开始绘制'
+      },
+      // 移除测量和提示框元素
+      removeMeasureElement() {
+        Object.values(this.tooltipElement).forEach(element => {
+          element.parentNode.remove(element)
+        })
+        Array.from(document.getElementsByClassName('tooltip-static')).forEach(element => {
+          element.parentNode.remove(element)
+        })
       },
       // 添加热力图
       addHeatMap() {
@@ -420,5 +427,48 @@
     position: absolute;
     top: 20px;
     right: 20px;
+  }
+</style>
+<style>
+  .tooltip {
+    position: relative;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    font-size: 14px;
+    color: white;
+    padding: 4px 8px;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+
+  .tooltip.hidden {
+    display: none;
+  }
+
+  .tooltip-measure {
+    opacity: 1;
+    font-weight: bold;
+  }
+
+  .tooltip-static {
+    background-color: #ffcc33;
+    color: black;
+    border: 1px solid white;
+  }
+
+  .tooltip-measure:before,
+  .tooltip-static:before {
+    border-top: 6px solid rgba(0, 0, 0, 0.5);
+    border-right: 6px solid transparent;
+    border-left: 6px solid transparent;
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    margin-left: -7px;
+    left: 50%;
+  }
+
+  .tooltip-static:before {
+    border-top-color: #ffcc33;
   }
 </style>
