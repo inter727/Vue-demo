@@ -1,0 +1,48 @@
+{
+  "default": [
+    { "stcd": "61802700", "stnm": "丹江口水库", "sttp": "HS", "lgtd":  111.485, "lttd": 32.555 },
+    { "stcd": "61902351", "stnm": "潘口水库", "sttp": "HS", "lgtd":  110.15382, "lttd": 32.21027 },
+    { "stcd": "60112200", "stnm": "汉口", "sttp": "ZQ", "lgtd":  114.28852, "lttd": 30.56883 },
+    { "stcd": "61800900", "stnm": "石泉", "sttp": "ZQ", "lgtd":  108.2388, "lttd": 33.0382 },
+    { "stcd": "61901000", "stnm": "贾家坊", "sttp": "ZQ", "lgtd":  110.4146, "lttd": 32.9653 },
+    { "stcd": "61902600", "stnm": "黄龙滩", "sttp": "ZQ", "lgtd":  110.55583, "lttd": 32.68611 },
+    { "stcd": "62001891", "stnm": "襄阳引丹", "sttp": "WS", "lgtd":  111.702, "lttd": 32.672 },
+    { "stcd": "62001895", "stnm": "陶岔渠", "sttp": "WS", "lgtd":  111.71607, "lttd": 32.67613 },
+    { "stcd": "61010280", "stnm": "老营", "sttp": "MM", "lgtd":  111.08083, "lttd": 32.45667 },
+    { "stcd": "61921600", "stnm": "卡子", "sttp": "MM", "lgtd":  110.01667, "lttd": 32.63333 },
+    { "stcd": "62031000", "stnm": "赵川", "sttp": "MM", "lgtd":  111.70083, "lttd": 33.18722 },
+    { "stcd": "61825950", "stnm": "钟家沟", "sttp": "MM", "lgtd":  107.4833, "lttd": 32.8333 }
+  ],
+  "category": [
+    {
+      "label": "水库电站",
+      "type": "HS",
+      "src": "static/img/map/icon_HS.png",
+      "offset": {"x": 12, "y":  -7},
+      "scale": 0.7
+    },
+    {
+      "label": "取水口门",
+      "type": "WS",
+      "src": "static/img/map/icon_WS.png",
+      "color": "#1CC775",
+      "offset": {"x": 12, "y":  -7},
+      "scale": 0.7
+    },
+    {
+      "label": "雨量站",
+      "type": "PP",
+      "src": "static/img/map/icon_PP.png",
+      "offset": {"x": 7, "y":  -7},
+      "scale": 0.7,
+      "style": {"width": "20px", "margin": "0 3px"}
+    },
+    {
+      "label": "水文站",
+      "type": "ZQ",
+      "src": "static/img/map/icon_ZQ.png",
+      "offset": {"x": 7, "y":  -7},
+      "style": {"width": "20px", "margin": "0 3px"}
+    }
+  ]
+}
