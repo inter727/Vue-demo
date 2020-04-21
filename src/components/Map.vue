@@ -16,18 +16,19 @@
 </template>
 
 <script>
-  import { Map, View, Overlay } from 'ol'
+  import { Map, View, Overlay, Feature } from 'ol'
   import { Tile as TileLayer, Vector as VectorLayer, Heatmap } from 'ol/layer'
   import { XYZ, Vector as VectorSource } from 'ol/source'
   import { WKT, GeoJSON } from 'ol/format'
-  import { Style, Stroke, Fill, Circle } from 'ol/style'
+  import { Style, Stroke, Fill, Circle, Icon, Text } from 'ol/style'
   import { Draw } from 'ol/interaction'
-  import { LineString } from 'ol/geom'
+  import { Point, LineString } from 'ol/geom'
   import { getDistance } from 'ol/sphere'
   import { transform } from 'ol/proj'
   import { unByKey } from 'ol/Observable'
   import mapLayer from '../../static/mapLayer'
   import drainageBasin from '../../static/drainageBasin'
+  import station from '../data/station.json'
 
   export default {
     name: "Map",
@@ -84,6 +85,15 @@
             { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 112.10, 23.789 ] }, properties: { weight: 0.1 }}
           ]
         },
+      }
+    },
+    computed: {
+      stationObj() {
+        return station.default.reduce((obj, item) => {
+          const type = item.sttp
+          type in obj ? obj[type].push(item) : obj[type] = [item]
+          return obj
+        }, {})
       }
     },
     methods: {
@@ -214,6 +224,35 @@
           let source = layer.getSource()
           if (!source.urls || !source.urls.length) { return }
           layer.setVisible(/cva/.test(source.urls[0]) || new RegExp(str).test(source.urls[0]))
+        })
+      },
+      addStationLayer() {
+        station.category.forEach(item => {
+          this.mapLayer[item.type] = new VectorLayer({
+            source: new VectorSource({
+              features: this.getFeatures(item)
+            })
+          })
+          this.map.addLayer(this.mapLayer[item.type])
+        })
+      },
+      getFeatures({ type, src, color = '#2d8cf0', offset = { x: 0, y: 0 }, scale = 1 }) {
+        return this.stationObj[type].map(({ stcd, stnm, lgtd, lttd }) => {
+          const feature = new Feature({ stcd, name: stnm, geometry: new Point([lgtd, lttd]) })
+          feature.setStyle(new Style({
+            image: new Icon({ src, scale, opacity: 1 }),
+            text: new Text({
+              text: stnm,
+              font: 'bold 12px 微软雅黑',
+              textAlign: 'left',
+              textBaseline: 'top',
+              fill: new Fill({ color }),
+              stroke: new Stroke({ color: "#eee", width: 2 }),
+              offsetX: offset.x,
+              offsetY: offset.y
+            })
+          }))
+          return feature
         })
       },
       initMeasureLayer() {
@@ -378,7 +417,7 @@
           featureProjection: 'EPSG:4326'
         })
         const source = new VectorSource({ features, wrapX: false })
-        this.mapLayer.heatMap = new Heatmap({ source, blur: 21, radius: 10 })
+        this.mapLayer.heatMap = new Heatmap({ source, blur: 15, radius: 10 })
         this.map.addLayer(this.mapLayer.heatMap)
 
         // 用定时器模拟动态刷新
@@ -402,6 +441,7 @@
     mounted() {
       this.initMap()
       this.addLayer()
+      this.addStationLayer()
       this.initMeasureLayer()
     }
   }
