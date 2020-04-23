@@ -19,7 +19,8 @@
       "type": "HS",
       "src": "src/assets/icon/icon_HS.png",
       "offset": {"x": 12, "y":  -7},
-      "scale": 0.7
+      "scale": 0.7,
+      "visible": true
     },
     {
       "label": "取水口门",
@@ -42,7 +43,8 @@
       "type": "ZQ",
       "src": "src/assets/icon/icon_ZQ.png",
       "offset": {"x": 7, "y":  -7},
-      "style": {"width": "20px", "margin": "0 3px"}
+      "style": {"width": "20px", "margin": "0 3px"},
+      "visible": true
     }
   ]
 }

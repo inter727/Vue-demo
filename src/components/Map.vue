@@ -12,6 +12,9 @@
                @change="addAreaLayer" @clear="clearAreaLayer">
       <el-option v-for="area in areas" :key="area" :label="area" :value="area"></el-option>
     </el-select>
+    <el-select class="category-select" v-model="category" multiple collapse-tags placeholder="请选择测站类型" @change="toggleVisible">
+      <el-option v-for="{ value, label } in categorys" :key="value" :label="label" :value="value"></el-option>
+    </el-select>
   </div>
 </template>
 
@@ -42,6 +45,7 @@
         mapLayer: {},
         area: '',
         areas: ['石泉水库以上', '石泉水库至白河水文站', '白河水文站至丹江口', '丹江河流域', '库周流域', '堵河流域'],
+        category: [],
         isMeasure: false,
         draw: null,
         tooltipElement: {
@@ -94,6 +98,9 @@
           type in obj ? obj[type].push(item) : obj[type] = [item]
           return obj
         }, {})
+      },
+      categorys() {
+        return station.category.map(({ type: value, label }) => ({ value, label }))
       }
     },
     methods: {
@@ -131,7 +138,7 @@
             projection: 'EPSG:4326',
             center: [110.654, 32.589],
             zoom: 7,
-            minZoom: 3
+            minZoom: 5
           }),
           layers: [landform, satellite, normal, base],
           controls: []
@@ -226,16 +233,22 @@
           layer.setVisible(/cva/.test(source.urls[0]) || new RegExp(str).test(source.urls[0]))
         })
       },
+      // 添加测站图层
       addStationLayer() {
         station.category.forEach(item => {
           this.mapLayer[item.type] = new VectorLayer({
             source: new VectorSource({
               features: this.getFeatures(item)
-            })
+            }),
+            visible: item.visible || false
           })
           this.map.addLayer(this.mapLayer[item.type])
+          if (item.visible) {
+            this.category.push(item.type)
+          }
         })
       },
+      // 获取测站图层特性
       getFeatures({ type, src, color = '#2d8cf0', offset = { x: 0, y: 0 }, scale = 1 }) {
         return this.stationObj[type].map(({ stcd, stnm, lgtd, lttd }) => {
           const feature = new Feature({ stcd, name: stnm, geometry: new Point([lgtd, lttd]) })
@@ -253,6 +266,12 @@
             })
           }))
           return feature
+        })
+      },
+      // 切换测站显示或隐藏
+      toggleVisible(vals) {
+        this.categorys.forEach(({ value }) => {
+            this.mapLayer[value].setVisible(vals.includes(value))
         })
       },
       initMeasureLayer() {
@@ -466,6 +485,12 @@
   .area-select {
     position: absolute;
     top: 20px;
+    right: 20px;
+  }
+
+  .category-select {
+    position: absolute;
+    top: 80px;
     right: 20px;
   }
 </style>
