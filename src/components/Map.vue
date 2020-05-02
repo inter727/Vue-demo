@@ -138,7 +138,8 @@
             projection: 'EPSG:4326',
             center: [110.654, 32.589],
             zoom: 7,
-            minZoom: 5
+            minZoom: 3,
+            maxZoom: 11
           }),
           layers: [landform, satellite, normal, base],
           controls: []
