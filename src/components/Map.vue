@@ -7,6 +7,7 @@
       <el-button size="small" @click="toggleLayer('ter')">地形图</el-button>
       <el-button size="small" @click="measure">测距</el-button>
       <el-button size="small" @click="addHeatMap">热力图</el-button>
+      <el-button size="small" @click="toggleSingleLayer">单色底图</el-button>
     </div>
     <el-select class="area-select" v-model="area" clearable placeholder="请选择流域分区"
                @change="addAreaLayer" @clear="clearAreaLayer">
@@ -31,6 +32,7 @@
   import { unByKey } from 'ol/Observable'
   import mapLayer from '../../static/mapLayer'
   import drainageBasin from '../../static/drainageBasin'
+  import hanRiver from '../../static/hanRiver.json'
   import station from '../data/station.json'
 
   export default {
@@ -89,6 +91,7 @@
             { type: 'Feature', geometry: {type: 'Point', 'coordinates': [ 112.10, 23.789 ] }, properties: { weight: 0.1 }}
           ]
         },
+        isSingleLayer: false
       }
     },
     computed: {
@@ -456,7 +459,33 @@
         this.heatData.features.forEach(item => {
           item.properties.weight = Math.random()
         })
-      }
+      },
+      //  汉江流域内单色底图和天地图切换
+      toggleSingleLayer() {
+        this.isSingleLayer = !this.isSingleLayer
+
+        if (!this.isSingleLayer) {
+          this.map.removeLayer(this.mapLayer.singleVector)
+          return
+        }
+
+        const target = hanRiver.features[0]
+        const geoFeature = new GeoJSON().readFeature(target)
+        const WKTFormat = new WKT()
+        const hanRiverLayer = WKTFormat.readFeature(WKTFormat.writeFeature(geoFeature), {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:4326'
+        })
+
+        hanRiverLayer.setStyle(new Style({
+          fill: new Fill({ color: '#ffffff' })
+        }))
+        this.mapLayer.singleVector = new VectorLayer({
+          source: new VectorSource()
+        })
+        this.mapLayer.singleVector.getSource().addFeature(hanRiverLayer)
+        this.map.addLayer(this.mapLayer.singleVector)
+      },
     },
     mounted() {
       this.initMap()
