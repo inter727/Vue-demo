@@ -30,9 +30,11 @@
   import { getDistance } from 'ol/sphere'
   import { transform } from 'ol/proj'
   import { unByKey } from 'ol/Observable'
-  import mapLayer from '../../static/mapLayer'
-  import drainageBasin from '../../static/drainageBasin'
-  import hanRiver from '../../static/hanRiver.json'
+  import mapLayer from '../../static/mapLayer'  // 汉江轮廓和轮廓外
+  import drainageBasin from '../../static/drainageBasin'  //  流域分区
+  import hanRiver from '../../static/hanRiver.json'  //  汉江流域内
+  import reservoir from '../../static/reservoir.json'  //  水库轮廓
+  import river from '../../static/river.json'  //  河流轮廓
   import station from '../data/station.json'
 
   export default {
@@ -187,6 +189,33 @@
           this.mapLayer.vector.getSource().addFeature(layer)
           this.map.addLayer(this.mapLayer.vector)
         })
+      },
+      // 添加水系图层
+      addRiverLayer() {
+        const WKTFormat = new WKT()
+        const riverGeoFeature = new GeoJSON().readFeatures(river)
+        const riverLayer = WKTFormat.readFeature(WKTFormat.writeFeatures(riverGeoFeature), {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:4326'
+        })
+        const reservoirGeoFeature = new GeoJSON().readFeatures(reservoir)
+        const reservoirLayer = WKTFormat.readFeature(WKTFormat.writeFeatures(reservoirGeoFeature), {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:4326'
+        })
+
+        riverLayer.setStyle(new Style({
+          stroke: new Stroke({ color: '#2d8cf0', width: 2 })
+        }))
+        reservoirLayer.setStyle(new Style({
+          stroke: new Stroke({ color: '#2d8cf0', width: 2 })
+        }))
+        const riverVector = new VectorLayer({
+          source: new VectorSource()
+        })
+        riverVector.getSource().addFeature(riverLayer)
+        riverVector.getSource().addFeature(reservoirLayer)
+        this.map.addLayer(riverVector)
       },
       // 添加对应流域遮罩
       addAreaLayer(val) {
@@ -490,6 +519,7 @@
     mounted() {
       this.initMap()
       this.addLayer()
+      this.addRiverLayer()
       this.addStationLayer()
       this.initMeasureLayer()
     }
