@@ -7,6 +7,7 @@ import Home from './components/Home.vue'
 import TableComponent from './components/TableComponent'
 import DialogComponent from './components/DialogComponent'
 import Map from './components/Map'
+import RichEditor from "@/components/RichEditor";
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,7 @@ const routes = [
   {path: '/tableComponent', component: TableComponent},
   {path: '/dialogComponent', component: DialogComponent},
   {path: '/map', component: Map},
+  {path: '/editor', component: RichEditor},
   {path: '*', redirect: '/home'}
 ]
 
